@@ -18,9 +18,9 @@ import DownloadApp from "@/components/common/downloadApp/DownloadApp";
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
   title:
-    "Home 1 || Lixride Chauffeur Limousine Transport and Car Hire Reactjs Template",
+    "Home 1 || DM Elegant Limousine",
   description:
-    "Lixride Chauffeur Limousine Transport and Car Hire Reactjs Template",
+    "DM Elegant Limousine",
 };
 export default function HomePage1() {
   return (

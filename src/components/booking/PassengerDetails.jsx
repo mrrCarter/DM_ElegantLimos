@@ -1,108 +1,111 @@
-import { useEffect } from "react";
+// PassengerDetails.jsx
+
+import React, { useEffect, useState } from "react";
 import SideBar from "./SideBar";
-import { Link } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function PassengerDetails() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const bookingDetails = location.state || {};
+
+  const [passengerInfo, setPassengerInfo] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    passengers: 1,
+    luggage: 0,
+    notes: "",
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setPassengerInfo((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleContinue = () => {
+    navigate("/booking-payment", {
+      state: { ...bookingDetails, passengerInfo },
+    });
+  };
+
   useEffect(() => {
-    // Focus event
-    document
-      .querySelectorAll(
-        ".form-comment input, .form-comment textarea, .form-comment select"
-      )
-      ?.forEach(function (element) {
-        element?.addEventListener("focus", function () {
-          this?.closest(".form-group").classList.add("focused");
-        });
-      });
-
-    // Blur event
-    document
-      .querySelectorAll(
-        ".form-comment input, .form-comment textarea, .form-comment select"
-      )
-      ?.forEach(function (element) {
-        element.addEventListener("blur", function () {
-          var inputValue = this.value;
-          if (inputValue === "") {
-            this.classList.remove("filled");
-            this.closest(".form-group").classList.remove("focused");
-          } else {
-            this.classList.add("filled");
-          }
-        });
-      });
-
-    // Check for pre-filled inputs
-    document
-      .querySelectorAll(
-        ".form-comment input, .form-comment textarea, .form-comment select"
-      )
-      ?.forEach(function (element) {
-        if (element?.value !== "") {
-          element?.closest(".form-group").classList.add("focused");
-          element.classList.add("filled");
-        }
-      });
+    // Any additional effects
   }, []);
+
   return (
     <div className="box-row-tab mt-50">
       <div className="box-tab-left">
         <div className="box-content-detail">
-          <h3 className="heading-24-medium color-text mb-30 wow fadeInUp">
+          <h3 className="heading-24-medium color-text mb-30">
             Passenger Details
           </h3>
-          <div className="form-contact form-comment wow fadeInUp">
+          <div className="form-contact form-comment">
             <form onSubmit={(e) => e.preventDefault()}>
               <div className="row">
                 <div className="col-lg-6">
                   <div className="form-group">
-                    <label className="form-label" htmlFor="fullname">
-                      Name
+                    <label className="form-label" htmlFor="firstName">
+               
                     </label>
                     <input
                       className="form-control"
-                      id="fullname"
+                      id="firstName"
+                      name="firstName"
                       type="text"
-                      defaultValue=""
+                      placeholder="First name"
+                      value={passengerInfo.firstName}
+                      onChange={handleInputChange}
                     />
                   </div>
                 </div>
                 <div className="col-lg-6">
                   <div className="form-group">
-                    <label className="form-label" htmlFor="lastname">
-                      Last Name
+                    <label className="form-label" htmlFor="lastName">
+                      
                     </label>
                     <input
                       className="form-control"
-                      id="lastname"
+                      id="lastName"
+                      name="lastName"
                       type="text"
-                      defaultValue=""
+                      placeholder="Last Name"
+                      value={passengerInfo.lastName}
+                      onChange={handleInputChange}
                     />
                   </div>
                 </div>
                 <div className="col-lg-6">
                   <div className="form-group">
                     <label className="form-label" htmlFor="email">
-                      Email Address
+                      
                     </label>
                     <input
                       className="form-control"
                       id="email"
-                      type="text"
-                      defaultValue="creativelayers088@gmail.com"
+                      name="email"
+                      type="email"
+                      placeholder="Email Address"
+                      value={passengerInfo.email}
+                      onChange={handleInputChange}
                     />
                   </div>
                 </div>
                 <div className="col-lg-6">
                   <div className="form-group">
                     <label className="form-label" htmlFor="phone">
-                      Phone Number
+                      
                     </label>
                     <input
                       className="form-control"
                       id="phone"
-                      type="text"
-                      defaultValue="+29 954 029 13"
+                      name="phone"
+                      type="tel"
+                      placeholder="Phone Number"
+                      value={passengerInfo.phone}
+                      onChange={handleInputChange}
                     />
                   </div>
                 </div>
@@ -110,71 +113,75 @@ export default function PassengerDetails() {
             </form>
           </div>
           <div className="mt-30"></div>
-          <h3 className="heading-24-medium color-text mb-30 wow fadeInUp">
+          <h3 className="heading-24-medium color-text mb-30">
             Options
           </h3>
-          <div className="form-contact form-comment wow fadeInUp">
+          <div className="form-contact form-comment">
             <form onSubmit={(e) => e.preventDefault()}>
               <div className="row">
                 <div className="col-lg-6">
                   <div className="form-group">
                     <label className="form-label" htmlFor="passengers">
-                      Passengers
+                      Number of Passengers
                     </label>
-                    <select className="form-control" id="passengers">
-                      <option value=""></option>
-                      <option value="1">1</option>
-                      <option value="2">2</option>
-                      <option value="3">3</option>
-                      <option value="4">4</option>
-                      <option value="5">5</option>
-                      <option value="6">6</option>
-                      <option value="7">7</option>
-                      <option value="8">8</option>
-                      <option value="9">9</option>
-                      <option value="10">10</option>
+                    <select
+                      className="form-control"
+                      id="passengers"
+                      name="passengers"
+                      value={passengerInfo.passengers}
+                      onChange={handleInputChange}
+                    >
+                      {[...Array(10)].map((_, idx) => (
+                        <option key={idx} value={idx + 1}>
+                          {idx + 1}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
                 <div className="col-lg-6">
                   <div className="form-group">
                     <label className="form-label" htmlFor="luggage">
-                      Luggage
+                      Number of Luggage Items
                     </label>
-                    <select className="form-control" id="luggage">
-                      <option value=""></option>
-                      <option value="1">1</option>
-                      <option value="2">2</option>
-                      <option value="3">3</option>
-                      <option value="4">4</option>
-                      <option value="5">5</option>
-                      <option value="6">6</option>
-                      <option value="7">7</option>
-                      <option value="8">8</option>
-                      <option value="9">9</option>
-                      <option value="10">10</option>
+                    <select
+                      className="form-control"
+                      id="luggage"
+                      name="luggage"
+                      value={passengerInfo.luggage}
+                      onChange={handleInputChange}
+                    >
+                      {[...Array(10)].map((_, idx) => (
+                        <option key={idx} value={idx}>
+                          {idx}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
                 <div className="col-lg-12">
                   <div className="form-group">
                     <label className="form-label" htmlFor="notes">
-                      Notes to driver
+                      
                     </label>
                     <textarea
                       className="form-control"
                       id="notes"
+                      name="notes"
                       rows="5"
+                      placeholder="Notes to Driver..."
+                      value={passengerInfo.notes}
+                      onChange={handleInputChange}
                     ></textarea>
                   </div>
                 </div>
               </div>
             </form>
           </div>
-          <div className="mt-30 mb-120 wow fadeInUp">
-            <Link
+          <div className="mt-30 mb-120">
+            <button
               className="btn btn-primary btn-primary-big w-100"
-              to="/booking-payment"
+              onClick={handleContinue}
             >
               Continue
               <svg
@@ -192,11 +199,17 @@ export default function PassengerDetails() {
                   d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"
                 ></path>
               </svg>
-            </Link>
+            </button>
           </div>
         </div>
       </div>
-      <SideBar />
+      <SideBar
+        initialFromAddress={bookingDetails.fromAddress}
+        initialToAddress={bookingDetails.toAddress}
+        initialDate={bookingDetails.date}
+        initialTime={bookingDetails.time}
+        passengerInfo={passengerInfo}
+      />
     </div>
   );
 }

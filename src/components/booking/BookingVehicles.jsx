@@ -1,36 +1,74 @@
-import React, { useState } from 'react';
+// BookingVehicles.jsx
 
+import React, { useState } from "react";
 import Pagination from "../common/Pagination";
-import { cars, features } from "@/data/cars";
-import { Link } from "react-router-dom";
-import { useLocation } from "react-router-dom";
-import PlacePicker from "@/components/common/PlacePicker";
+import { cars } from "@/data/cars";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import SideBar from "./SideBar";
 
 export default function BookingVehicles() {
-  const [fromAddress, setFromAddress] = useState("");
-  const [toAddress, setToAddress] = useState(""); // Retrieve passed state
+  const location = useLocation();
+  const navigate = useNavigate();
+  const {
+    fromAddress: initialFromAddress,
+    toAddress: initialToAddress,
+    date: initialDate,
+    time: initialTime,
+  } = location.state || {};
 
-    // // Function to handle setting the addresses from the PlacePicker component
-    // const handleFromAddressChange = (address) => setFromAddress(address);
-    // const handleToAddressChange = (address) => setToAddress(address);
+  const [distanceValue, setDistanceValue] = useState(null); // in meters
+  const [durationValue, setDurationValue] = useState(null); // in seconds
+
+  const calculatePrice = (vehicleType) => {
+    const distanceInMiles = distanceValue ? distanceValue / 1609.34 : 0;
+    const durationInMinutes = durationValue ? durationValue / 60 : 0;
+
+    // Base rates
+    const minimumFare = 75;
+    const baseRatePerMile = vehicleType === "Luxury Class" ? 3.75 : 4.5;
+    const baseRatePerMinute = 0.5;
+
+    const fare = Math.max(
+      minimumFare,
+      distanceInMiles * baseRatePerMile + durationInMinutes * baseRatePerMinute
+    );
+
+    return fare.toFixed(2);
+  };
+
+  const handleSelectVehicle = (vehicle) => {
+    const price = calculatePrice(vehicle.title);
+    const bookingDetails = {
+      vehicle,
+      price,
+      fromAddress: initialFromAddress,
+      toAddress: initialToAddress,
+      date: initialDate,
+      time: initialTime,
+      distanceValue,
+      durationValue,
+    };
+    navigate("/booking-extra", { state: bookingDetails });
+  };
 
   return (
     <div className="box-row-tab mt-50">
       <div className="box-tab-left">
         <div className="box-content-detail">
-          <h3 className="heading-24-medium color-text mb-30 wow fadeInUp">
+          <h3 className="heading-24-medium color-text mb-30">
             Select Your Car
           </h3>
-          <div className="list-vehicles wow fadeInUp">
+          <div className="list-vehicles">
             {cars
               .filter(
-                (car) => car.title === "Luxury Class" || car.title === "SUV Class"
+                (car) =>
+                  car.title === "Luxury Class" || car.title === "SUV Class"
               )
               .map((elm, i) => (
-                <div key={i} className="item-vehicle wow fadeInUp">
+                <div key={i} className="item-vehicle">
                   <div className="vehicle-left">
                     <div className="vehicle-image">
-                      <img src={elm.imgSrc} alt="luxride" />
+                      <img src={elm.imgSrc} alt={elm.title} />
                     </div>
                     <div className="vehicle-facilities">
                       <div className="text-fact meet-greeting">
@@ -46,14 +84,11 @@ export default function BookingVehicles() {
                         Safe and secure travel
                       </div>
                     </div>
-                    {/* <div className="mt-10">
-                      <Link
-                        className="link text-14-medium"
-                        to="/booking-extra"
-                      >
+                    <div className="mt-10">
+                      <Link className="link text-14-medium" to="#">
                         Show more information
                       </Link>
-                    </div> */}
+                    </div>
                   </div>
                   <div className="vehicle-right">
                     <h5 className="text-20-medium color-text mb-10">
@@ -64,15 +99,25 @@ export default function BookingVehicles() {
                     </p>
                     <div className="vehicle-passenger-luggage mb-10">
                       <span className="passenger">
-                        Passengers: {elm.passenger}
+                        Passengers {elm.passenger}
                       </span>
-                      <span className="luggage">
-                        Luggage: {elm.luggage}
-                      </span>
+                      <span className="luggage">Luggage {elm.luggage}</span>
                     </div>
-                    <Link
+                    <div className="vehicle-price mb-10">
+                      {distanceValue && durationValue ? (
+                        <>
+                          <span className="price-label">Price:</span>
+                          <span className="price-value">
+                            ${calculatePrice(elm.title)}
+                          </span>
+                        </>
+                      ) : (
+                        <span>Calculating price...</span>
+                      )}
+                    </div>
+                    <button
                       className="btn btn-primary w-100"
-                      to="/booking-receved"
+                      onClick={() => handleSelectVehicle(elm)}
                     >
                       Select
                       <svg
@@ -90,68 +135,22 @@ export default function BookingVehicles() {
                           d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"
                         ></path>
                       </svg>
-                    </Link>
+                    </button>
                   </div>
                 </div>
               ))}
           </div>
+          <Pagination />
         </div>
       </div>
-      <div className="box-tab-right">
-        <div className="sidebar">
-          <div className="d-flex align-items-center justify-content-between wow fadeInUp">
-            <h6 className="text-20-medium color-text">Ride Summary</h6>
-            <a
-              className="text-14-medium color-text text-decoration-underline"
-              href="/"
-            >
-              Edit
-            </a>
-          </div>
-          <div className="mt-20 wow fadeInUp">
-            <ul className="list-routes">
-              <li>
-                <span className="location-item">A </span>
-                <span className="info-location text-14-medium">
-                  {fromAddress || "Enter Pickup Location"}
-                </span>
-              </li>
-              <li>
-                <span className="location-item">B </span>
-                <span className="info-location text-14-medium">
-                  {toAddress || "Enter Dropoff Location"}
-                </span>
-              </li>
-            </ul>
-          </div>
-
-          <div className="mt-20 wow fadeInUp">
-            <ul className="list-icons">
-              <li>
-                <span className="icon-item icon-plan"> </span>
-                <span className="info-location text-14-medium">
-                  Thu, Oct 06, 2022
-                </span>
-              </li>
-              <li>
-                <span className="icon-item icon-time"></span>
-                <span className="info-location text-14-medium">
-                  6 PM : 15
-                </span>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div className="sidebar wow fadeInUp">
-          <ul className="list-ticks list-ticks-small list-ticks-small-booking">
-            {features.map((elm, i) => (
-              <li key={i} className="text-14 mb-20">
-                {elm}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
+      <SideBar
+        initialFromAddress={initialFromAddress}
+        initialToAddress={initialToAddress}
+        initialDate={initialDate}
+        initialTime={initialTime}
+        setDistanceValue={setDistanceValue}
+        setDurationValue={setDurationValue}
+      />
     </div>
   );
 }

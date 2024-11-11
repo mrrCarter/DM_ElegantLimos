@@ -7,9 +7,9 @@ import MobailHeader1 from "@/components/headers/MobailHeader1";
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
   title:
-    "Booking Vehicles || Lixride Chauffeur Limousine Transport and Car Hire Reactjs Template",
+    "DM Elegant Limousine || DM Elegant Chauffeur Limousine Transport and Car Hire",
   description:
-    "Lixride Chauffeur Limousine Transport and Car Hire Reactjs Template",
+    "DM Elegant Limousine Chauffeur Limousine Transport and Car Hire",
 };
 
 export default function BookingVehiclePage() {

@@ -16,9 +16,9 @@ import Testimonials from "@/components/homes/home-7/Testimonials";
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
   title:
-    "Home 7 || Lixride Chauffeur Limousine Transport and Car Hire Reactjs Template",
+    "Home 7 || DM Elegant Limousine",
   description:
-    "Lixride Chauffeur Limousine Transport and Car Hire Reactjs Template",
+    "DM Elegant Limousine",
 };
 
 export default function HomePage7() {

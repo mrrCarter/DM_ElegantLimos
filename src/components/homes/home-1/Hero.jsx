@@ -1,9 +1,11 @@
+
+import React, { useState } from "react";
 import DatePickerComponent from "@/components/common/DatePicker";
 import PlacePicker from "@/components/common/PlacePicker";
 import TimePickerComponent from "@/components/common/TimePicker";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate from react-router-dom
+import { useNavigate } from "react-router-dom";
 
 const banners = [
   {
@@ -32,6 +34,8 @@ const banners = [
   },
 ];
 
+
+
 export default function Hero() {
   const settings = {
     slidesPerView: 1,
@@ -51,13 +55,45 @@ export default function Hero() {
     },
   };
 
-  const navigate = useNavigate(); // Initialize the useNavigate hook
+  const navigate = useNavigate();
+
+  // Initialize date and time as JavaScript Date objects
+  const [date, setDate] = useState(new Date());
+  const [time, setTime] = useState(new Date(Date.now() + 2 * 60 * 60 * 1000)); // Current time + 2 hours
+
+  const [fromAddress, setFromAddress] = useState("");
+  const [toAddress, setToAddress] = useState("");
+
+  // Validation states
+  const [errors, setErrors] = useState({});
 
   // Function to handle the Search button click
   const handleSearchClick = () => {
-    navigate("/booking-vehicle"); // Navigate to the BookingVehiclePage
-    console.log("Search button clicked"); // Just for debugging
+    // Additional validation before navigation
+    let validationErrors = {};
+
+    if (!date) validationErrors.date = "Please select a date.";
+    if (!time) validationErrors.time = "Please select a time.";
+    if (!fromAddress) validationErrors.fromAddress = "Please enter a pickup location.";
+    if (!toAddress) validationErrors.toAddress = "Please enter a drop-off location.";
+
+    setErrors(validationErrors);
+
+    // If there are no validation errors, proceed
+    if (Object.keys(validationErrors).length === 0) {
+      navigate("/booking-vehicle", {
+        state: {
+          date: date.toISOString(),
+          time: time.toISOString(),
+          fromAddress,
+          toAddress,
+        },
+      });
+    }
   };
+
+  // Form validation - check if all required fields are filled
+  const isFormValid = date && time && fromAddress && toAddress;
 
   return (
     <section className="section banner-home1">
@@ -73,13 +109,13 @@ export default function Hero() {
                 className="box-cover-image boxBgImage"
                 style={{
                   backgroundImage: `url(${elm.url})`,
-                  backgroundSize: "cover", // Ensures the image covers the entire container
-                  backgroundPosition: "center", // Centers the image
-                  backgroundRepeat: "no-repeat", // Prevents repeating
-                  height: "350px", // Fix height to 860px
-                  width: "100%", // Make sure it covers the full width
-                  maxWidth: "1920px", // Limit the width to 1920px
-                  margin: "0 auto", // Center it horizontally if you want it inside a container
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  backgroundRepeat: "no-repeat",
+                  height: "350px",
+                  width: "100%",
+                  maxWidth: "1920px",
+                  margin: "0 auto",
                 }}
               ></div>
               <div className="box-banner-info">
@@ -107,7 +143,8 @@ export default function Hero() {
           </div>
           <div className="search-inputs">
             <label className="text-14 color-grey">Date</label>
-            <DatePickerComponent />
+            <DatePickerComponent value={date} onChange={setDate} />
+            {errors.date && <span className="error-text">{errors.date}</span>}
           </div>
         </div>
         <div className="search-item search-time">
@@ -116,7 +153,8 @@ export default function Hero() {
           </div>
           <div className="search-inputs">
             <label className="text-14 color-grey">Time</label>
-            <TimePickerComponent />
+            <TimePickerComponent value={time} onChange={setTime} />
+            {errors.time && <span className="error-text">{errors.time}</span>}
           </div>
         </div>
         <div className="search-item search-from">
@@ -125,7 +163,8 @@ export default function Hero() {
           </div>
           <div className="search-inputs">
             <label className="text-14 color-grey">From</label>
-            <PlacePicker />
+            <PlacePicker value={fromAddress} onChange={setFromAddress} />
+            {errors.fromAddress && <span className="error-text">{errors.fromAddress}</span>}
           </div>
         </div>
         <div className="search-item search-to">
@@ -134,11 +173,17 @@ export default function Hero() {
           </div>
           <div className="search-inputs">
             <label className="text-14 color-grey">To</label>
-            <PlacePicker />
+            <PlacePicker value={toAddress} onChange={setToAddress} />
+            {errors.toAddress && <span className="error-text">{errors.toAddress}</span>}
           </div>
         </div>
         <div className="search-item search-button">
-          <button className="btn btn-search" type="submit" onClick={handleSearchClick}>
+          <button
+            className="btn btn-search"
+            type="button"
+            onClick={handleSearchClick}
+            disabled={!isFormValid}
+          >
             <img src="/assets/imgs/template/icons/search.svg" alt="luxride" />
             Search
           </button>

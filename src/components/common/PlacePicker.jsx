@@ -1,20 +1,42 @@
-import React, { useState } from 'react';
+// PlacePicker.jsx
 
-export default function PlacePicker({ label, onChange }) {
-  const [address, setAddress] = useState('');
+import React, { useState } from "react";
+import { Autocomplete } from "@react-google-maps/api";
 
-  const handleInputChange = (e) => {
-    setAddress(e.target.value);
-    if (onChange) onChange(e.target.value);
+export default function PlacePicker({ label, value, onChange }) {
+  const [autocomplete, setAutocomplete] = useState(null);
+
+  const onLoad = (autocompleteInstance) => {
+    setAutocomplete(autocompleteInstance);
+  };
+
+  const onPlaceChanged = () => {
+    if (autocomplete !== null) {
+      const place = autocomplete.getPlace();
+      const formattedAddress = place.formatted_address || place.name;
+      if (onChange) onChange(formattedAddress);
+    } else {
+      console.log("Autocomplete is not loaded yet!");
+    }
   };
 
   return (
-    <input
-      type="text"
-      className="form-control"
-      placeholder="Address. Airport. Hotel. etc."
-      value={address}
-      onChange={handleInputChange}
-    />
+    <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
+      <input
+        type="text"
+        className="form-control"
+        placeholder={label || "Enter a location"}
+        defaultValue={value}
+        style={{
+          width: "100%",
+          border: "none",
+          borderBottom: "1px solid #ccc",
+          fontSize: "18px",
+          padding: "10px 0",
+          color: "#000",
+          backgroundColor: "transparent",
+        }}
+      />
+    </Autocomplete>
   );
 }

@@ -16,9 +16,9 @@ import MobailHeader1 from "@/components/headers/MobailHeader1";
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
   title:
-    "Home 3 || Lixride Chauffeur Limousine Transport and Car Hire Reactjs Template",
+    "Home 3 || DM Elegant Limousine",
   description:
-    "Lixride Chauffeur Limousine Transport and Car Hire Reactjs Template",
+    "DM Elegant Limousine",
 };
 
 export default function HomePage3() {

@@ -1,14 +1,22 @@
+// Pagination.jsx
+
 import { useState } from "react";
 
 export default function Pagination() {
   const [activePage, setActivePage] = useState(1);
+  const totalPages = 10; // Set the total number of pages
+
+  const pages = [];
+  for (let i = 1; i <= totalPages; i++) {
+    pages.push(i);
+  }
 
   return (
     <ul className="pagination">
       <li className="page-item">
         <a
           className="page-link page-prev cursor-pointer"
-          onClick={() => setActivePage((pre) => (pre > 1 ? pre - 1 : pre))}
+          onClick={() => setActivePage((prev) => (prev > 1 ? prev - 1 : prev))}
         >
           <svg
             fill="none"
@@ -26,52 +34,19 @@ export default function Pagination() {
           </svg>
         </a>
       </li>
-      {[1, 2, 3].map((elm, i) => (
-        <li key={i} className="page-item">
+      {pages.map((page) => (
+        <li key={page} className="page-item">
           <a
-            onClick={() => setActivePage(elm)}
-            className={`page-link cursor-pointer ${
-              elm == activePage ? "active" : ""
-            }`}
+            onClick={() => setActivePage(page)}
+            className={`page-link cursor-pointer ${page === activePage ? "active" : ""}`}
           >
-            {elm}
+            {page}
           </a>
         </li>
-      ))}{" "}
-      {activePage > 4 && activePage < 10 && (
-        <li className="page-item">
-          <a className="page-link" href="#">
-            ...
-          </a>
-        </li>
-      )}
-      {activePage > 3 && activePage < 10 && (
-        <li className="page-item cursor-pointer">
-          <a className={`page-link cursor-pointer active`}>{activePage}</a>
-        </li>
-      )}
-      {activePage != 9 && (
-        <li className="page-item">
-          <a className="page-link" href="#">
-            ...
-          </a>
-        </li>
-      )}
-      <li
-        onClick={() => setActivePage(() => 10)}
-        className="page-item cursor-pointer"
-      >
-        <a
-          className={`page-link cursor-pointer ${
-            10 == activePage ? "active" : ""
-          }`}
-        >
-          10
-        </a>
-      </li>
+      ))}
       <li
         className="page-item cursor-pointer"
-        onClick={() => setActivePage((pre) => (pre < 10 ? pre + 1 : pre))}
+        onClick={() => setActivePage((prev) => (prev < totalPages ? prev + 1 : prev))}
       >
         <a className="page-link page-next">
           <svg
