@@ -1,36 +1,33 @@
 // BookingVehicles.jsx
 
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Pagination from "../common/Pagination";
 import { cars } from "@/data/cars";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import SideBar from "./SideBar";
+import { BookingContext } from "./BookingContext";
 
 export default function BookingVehicles() {
-  const location = useLocation();
   const navigate = useNavigate();
-  const {
-    fromAddress: initialFromAddress,
-    toAddress: initialToAddress,
-    date: initialDate,
-    time: initialTime,
-  } = location.state || {};
-
-  const [distanceValue, setDistanceValue] = useState(null); // in meters
-  const [durationValue, setDurationValue] = useState(null); // in seconds
+  const { bookingData, setBookingData } = useContext(BookingContext);
 
   const calculatePrice = (vehicleType) => {
-    const distanceInMiles = distanceValue ? distanceValue / 1609.34 : 0;
-    const durationInMinutes = durationValue ? durationValue / 60 : 0;
+    const distanceInMiles = bookingData.distanceValue
+      ? bookingData.distanceValue / 1609.34
+      : 0;
+    const durationInMinutes = bookingData.durationValue
+      ? bookingData.durationValue / 60
+      : 0;
 
     // Base rates
     const minimumFare = 75;
     const baseRatePerMile = vehicleType === "Luxury Class" ? 3.75 : 4.5;
-    const baseRatePerMinute = 0.5;
+    const baseRatePerMinute = 1.5;
 
     const fare = Math.max(
       minimumFare,
-      distanceInMiles * baseRatePerMile + durationInMinutes * baseRatePerMinute
+      distanceInMiles * baseRatePerMile +
+        durationInMinutes * baseRatePerMinute
     );
 
     return fare.toFixed(2);
@@ -38,17 +35,35 @@ export default function BookingVehicles() {
 
   const handleSelectVehicle = (vehicle) => {
     const price = calculatePrice(vehicle.title);
-    const bookingDetails = {
+
+    setBookingData((prev) => ({
+      ...prev,
       vehicle,
       price,
-      fromAddress: initialFromAddress,
-      toAddress: initialToAddress,
-      date: initialDate,
-      time: initialTime,
-      distanceValue,
-      durationValue,
-    };
-    navigate("/booking-extra", { state: bookingDetails });
+    }));
+
+    navigate("/booking-passenger");
+  };
+
+  const calculateRoute = async () => {
+    // ... your existing route calculation logic ...
+
+    const directionsService = new window.google.maps.DirectionsService();
+
+    const result = await directionsService.route({
+      origin: bookingData.fromAddress,
+      destination: bookingData.toAddress,
+      travelMode: window.google.maps.TravelMode.DRIVING,
+    });
+
+    // Save the directions response
+    setBookingData((prev) => ({
+      ...prev,
+      directionsResponse: result,
+      distanceText: result.routes[0].legs[0].distance.text,
+      durationText: result.routes[0].legs[0].duration.text,
+      // ... any other data you need ...
+    }));
   };
 
   return (
@@ -85,9 +100,9 @@ export default function BookingVehicles() {
                       </div>
                     </div>
                     <div className="mt-10">
-                      <Link className="link text-14-medium" to="#">
+                      <a className="link text-14-medium" href="#">
                         Show more information
-                      </Link>
+                      </a>
                     </div>
                   </div>
                   <div className="vehicle-right">
@@ -104,7 +119,8 @@ export default function BookingVehicles() {
                       <span className="luggage">Luggage {elm.luggage}</span>
                     </div>
                     <div className="vehicle-price mb-10">
-                      {distanceValue && durationValue ? (
+                      {bookingData.distanceValue &&
+                      bookingData.durationValue ? (
                         <>
                           <span className="price-label">Price:</span>
                           <span className="price-value">
@@ -140,17 +156,9 @@ export default function BookingVehicles() {
                 </div>
               ))}
           </div>
-          <Pagination />
         </div>
       </div>
-      <SideBar
-        initialFromAddress={initialFromAddress}
-        initialToAddress={initialToAddress}
-        initialDate={initialDate}
-        initialTime={initialTime}
-        setDistanceValue={setDistanceValue}
-        setDurationValue={setDurationValue}
-      />
+      <SideBar />
     </div>
   );
 }

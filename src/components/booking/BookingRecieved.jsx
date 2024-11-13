@@ -1,60 +1,78 @@
-import { useEffect } from "react";
-import emailjs from 'emailjs-com'; // Import EmailJS
+// BookingReceived.jsx
 
-const infoData = [
-  { id: 1, label: "Order Number", value: "#4039" },
-  { id: 2, label: "Date", value: "Thu, Oct 06, 2022" },
-];
+import React, { useEffect, useContext } from "react";
+import { BookingContext } from "./BookingContext";
+import emailjs from 'emailjs-com';
+import { GoogleMap, DirectionsRenderer } from "@react-google-maps/api";
+import { useNavigate } from "react-router-dom";
 
-const rideData = [
-  { id: 1, topText: "Pick Up Address", bottomText: "London City Airport (LCY)" },
-  { id: 2, topText: "Drop Off Address", bottomText: "London City Airport (LCY)" },
-  { id: 3, topText: "Pick Up Date", bottomText: "Thu, Oct 06, 2022" },
-  { id: 4, topText: "Pick Up Time", bottomText: "6 PM : 15" },
-];
+const containerStyle = {
+  width: "100%",
+  height: "400px",
+};
 
-const personalData = [
-  { id: 1, topText: "First name", bottomText: "Ali" },
-  { id: 2, topText: "Last name", bottomText: "Tufan" },
-  { id: 3, topText: "Email", bottomText: "creativelayers088@gmail.com" },
-  { id: 4, topText: "Phone", bottomText: "+09 383 829 91" },
-  { id: 5, topText: "Address line 1", bottomText: "" },
-  { id: 6, topText: "Address line 2", bottomText: "" },
-  { id: 7, topText: "City", bottomText: "London" },
-  { id: 8, topText: "State/Province/Region", bottomText: "" },
-  { id: 9, topText: "ZIP code/Postal code", bottomText: "95833" },
-  { id: 10, topText: "Country", bottomText: "UK" },
-  { id: 11, topText: "Special Requirements", bottomText: "" },
-];
+export default function BookingReceived() {
+  const { bookingData } = useContext(BookingContext);
+  const navigate = useNavigate();
+  const {
+    fromAddress,
+    toAddress,
+    date,
+    time,
+    directionsResponse,
+    passengerInfo,
+    vehicle,
+    price,
+    gratuityPercentage,
+    totalPrice,
+    cardLast4Digits,
+    distanceText,
+    durationText,
+  } = bookingData;
 
-export default function BookingRecieved() {
   useEffect(() => {
+    if (!bookingData || !bookingData.passengerInfo || !bookingData.price) {
+      // Redirect to the booking start page
+      navigate("/booking");
+    }
     // Construct the email content
     const templateParams = {
-      to_email: 'info@dmelegantlimos.com',
-      order_number: infoData[0].value,
-      date: infoData[1].value,
-      pick_up_address: rideData[0].bottomText,
-      drop_off_address: rideData[1].bottomText,
-      pick_up_date: rideData[2].bottomText,
-      pick_up_time: rideData[3].bottomText,
-      first_name: personalData[0].bottomText,
-      last_name: personalData[1].bottomText,
-      email: personalData[2].bottomText,
-      phone: personalData[3].bottomText,
-      city: personalData[6].bottomText,
-      zip: personalData[8].bottomText,
-      country: personalData[9].bottomText
+      to_email: passengerInfo?.email || 'info@yourcompany.com',
+      order_number: '#4039', // Generate or fetch a real order number
+      date: new Date().toLocaleDateString(),
+      fromAddress,
+      toAddress,
+      date: date ? new Date(date).toLocaleDateString() : '',
+      time: time ? new Date(time).toLocaleTimeString() : '',
+      first_name: passengerInfo?.firstName || '',
+      last_name: passengerInfo?.lastName || '',
+      email: passengerInfo?.email || '',
+      phone: passengerInfo?.phoneNumber || '',
+      vehicle: vehicle?.title || '',
+      base_price: parseFloat(price).toFixed(2),
+      gratuity_percentage: gratuityPercentage,
+      total_price: totalPrice,
+      distance: distanceText,
+      duration: durationText,
+      status: 'Paid',
     };
 
-    // Send email with EmailJS
-    emailjs.send('service_0edy7vs', 'template_knkkpvf', templateParams, 'YOUR_USER_ID')
+    // Send email to client
+    emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams, 'YOUR_USER_ID')
       .then((response) => {
-        console.log('Email sent successfully!', response.status, response.text);
+        console.log('Email sent to client successfully!', response.status, response.text);
       }, (error) => {
-        console.error('Failed to send email:', error);
+        console.error('Failed to send email to client:', error);
       });
-  }, []);
+
+    // Send email to company
+    emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', { ...templateParams, to_email: 'info@yourcompany.com' }, 'YOUR_USER_ID')
+      .then((response) => {
+        console.log('Email sent to company successfully!', response.status, response.text);
+      }, (error) => {
+        console.error('Failed to send email to company:', error);
+      });
+  }, [bookingData, navigate]);
 
   return (
     <section className="section">
@@ -64,16 +82,118 @@ export default function BookingRecieved() {
             <img
               className="mb-20"
               src="/assets/imgs/page/booking/completed.png"
-              alt="luxride"
+              alt="Booking Confirmation"
             />
             <h4 className="heading-24-medium color-text mb-10">
-              System, your order was submitted successfully!
+              {passengerInfo?.firstName}, your booking was submitted successfully!
             </h4>
             <p className="text-14 color-grey mb-40">
-              Booking details have been sent to: info@dmelegantlimos.com, and a representative will be with you momentarily.
+              Booking details have been sent to: {passengerInfo?.email}, and a representative will be with you momentarily.
             </p>
           </div>
-          {/* Your booking info display code here */}
+          {/* Display Booking Details */}
+          <div className="booking-details">
+            <h5 className="mb-20">Booking Invoice</h5>
+            <table className="invoice-table">
+              <tbody>
+                <tr>
+                  <td><strong>Order Number:</strong></td>
+                  <td>#4039</td>
+                </tr>
+                <tr>
+                  <td><strong>Date:</strong></td>
+                  <td>{new Date().toLocaleDateString()}</td>
+                </tr>
+                <tr>
+                  <td><strong>Passenger Name:</strong></td>
+                  <td>{passengerInfo?.firstName} {passengerInfo?.lastName}</td>
+                </tr>
+                <tr>
+                  <td><strong>Phone Number:</strong></td>
+                  <td>{passengerInfo?.phoneNumber}</td>
+                </tr>
+                <tr>
+                  <td><strong>Email:</strong></td>
+                  <td>{passengerInfo?.email}</td>
+                </tr>
+                <tr>
+                  <td><strong>Pick Up Address:</strong></td>
+                  <td>{fromAddress}</td>
+                </tr>
+                <tr>
+                  <td><strong>Drop Off Address:</strong></td>
+                  <td>{toAddress}</td>
+                </tr>
+                <tr>
+                  <td><strong>Pick Up Date:</strong></td>
+                  <td>{date ? new Date(date).toLocaleDateString() : ''}</td>
+                </tr>
+                <tr>
+                  <td><strong>Pick Up Time:</strong></td>
+                  <td>{time ? new Date(time).toLocaleTimeString() : ''}</td>
+                </tr>
+                <tr>
+                  <td><strong>Vehicle:</strong></td>
+                  <td>{vehicle?.title}</td>
+                </tr>
+                <tr>
+                  <td><strong>Distance:</strong></td>
+                  <td>{distanceText}</td>
+                </tr>
+                <tr>
+                  <td><strong>Estimated Duration:</strong></td>
+                  <td>{durationText}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            {/* Price Breakdown */}
+            <h6 className="text-16-medium color-text mb-10 mt-30">Price Breakdown</h6>
+            <table className="invoice-table">
+              <tbody>
+                <tr>
+                  <td>Base Price:</td>
+                  <td>${parseFloat(price).toFixed(2)}</td>
+                </tr>
+                <tr>
+                  <td>Gratuity ({gratuityPercentage}%):</td>
+                  <td>
+                    ${(
+                      (gratuityPercentage / 100) *
+                      parseFloat(price)
+                    ).toFixed(2)}
+                  </td>
+                </tr>
+                <tr className="font-weight-bold">
+                  <td>Total Price:</td>
+                  <td>${totalPrice}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <p className="mt-15">
+              Status: <strong>Paid</strong>
+            </p>
+          </div>
+
+          {/* Display Map */}
+          {directionsResponse && (
+            <div className="mt-20">
+              <GoogleMap
+                mapContainerStyle={containerStyle}
+                options={{
+                  disableDefaultUI: true,
+                }}
+              >
+                <DirectionsRenderer
+                  directions={directionsResponse}
+                  options={{
+                    suppressMarkers: false,
+                  }}
+                />
+              </GoogleMap>
+            </div>
+          )}
         </div>
       </div>
     </section>

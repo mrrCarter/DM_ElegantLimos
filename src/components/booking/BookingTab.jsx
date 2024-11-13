@@ -1,63 +1,46 @@
-import { Link } from "react-router-dom";
-import { useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
-const tabs = [
-  {
-    id: 1,
-    href: "/booking-vehicle",
-    iconClass: "icon-book icon-vehicle",
-    text: "Vehicle",
-    number: "01",
-  },
-  {
-    id: 2,
-    href: "/booking-extra",
-    iconClass: "icon-book icon-extra",
-    text: "Extras",
-    number: "02",
-  },
-  {
-    id: 3,
-    href: "/booking-passenger",
-    iconClass: "icon-book icon-pax",
-    text: "Details",
-    number: "03",
-  },
-  {
-    id: 4,
-    href: "/booking-payment",
-    iconClass: "icon-book icon-payment",
-    text: "Payment",
-    number: "04",
-  },
-];
+import React from "react";
 
-export default function BookingTab() {
-  const [activePathIndex, setactivePathIndex] = useState(0);
-  const { pathname } = useLocation();
-  useEffect(() => {
-    const activeTab = tabs.filter((elm) => elm.href == pathname)[0];
-    const activeTabIndex = tabs.indexOf(activeTab);
-    setactivePathIndex(activeTabIndex);
-  }, [pathname]);
+export default function BookingTab({ currentStep, setCurrentStep }) {
+  const steps = [
+    { step: 1, label: "Vehicle" },
+    { step: 2, label: "Passenger" },
+    { step: 3, label: "Payment" },
+  ];
+
+  const handleStepClick = (step) => {
+    // Allow navigation to previous steps or the current step
+    if (step <= currentStep) {
+      setCurrentStep(step);
+    }
+  };
 
   return (
     <div className="box-booking-tabs">
-      {tabs.map((elm, i) => (
-        <div key={i} className="item-tab wow fadeInUp">
-          <Link to={elm.href}>
-            <div
-              className={`box-tab-step ${activePathIndex >= i ? "active" : ""}`}
-            >
-              <div className="icon-tab">
-                <span className={elm.iconClass}> </span>
-                <span className="text-tab">{elm.text} </span>
-              </div>
-              {/* <div className="number-tab">
-                <span>0{i + 1}</span>
-              </div> */}
+      {steps.map(({ step, label }, index) => (
+        <div key={step} className="item-tab wow fadeInUp">
+          <div
+            className={`box-tab-step ${currentStep >= step ? "active" : ""} ${
+              step > currentStep ? "disabled" : ""
+            }`}
+            onClick={() => handleStepClick(step)}
+            style={{ cursor: step <= currentStep ? "pointer" : "not-allowed" }}
+          >
+            <div className="icon-tab">
+              <span
+                className={
+                  step === 1
+                    ? "icon-book icon-vehicle"
+                    : step === 2
+                    ? "icon-book icon-pax"
+                    : "icon-book icon-payment"
+                }
+              > </span>
+              <span className="text-tab">{label} </span>
             </div>
-          </Link>
+            <div className="number-tab">
+              <span>0{step}</span>
+            </div>
+          </div>
         </div>
       ))}
     </div>

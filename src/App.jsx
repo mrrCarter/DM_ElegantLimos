@@ -36,7 +36,9 @@ import BlogsGridPage2 from "./pages/blogs/blog-grid-2";
 import BlogsListPage from "./pages/blogs/blog-list";
 import BlogsSinglePage from "./pages/blogs/blog-single";
 import BookingRecevedPage from "./pages/booking/booking-receved";
+import BookingPage from "./pages/booking-page";
 import WOW from "wow.js";
+import { BookingProvider } from "./components/booking/BookingContext";
 
 import { LoadScript } from "@react-google-maps/api"; // Import LoadScript
 
@@ -61,9 +63,11 @@ function App() {
   }, [pathname]);
 
   return (
+    <BookingProvider>
     <LoadScript
       googleMapsApiKey="AIzaSyAU4OiURduvgpZfhLSJVy2Ga2xjJcwVTAg" // Replace with your API key
       libraries={libraries}
+      loadingElement={<div>Loading Maps...</div>}
     >
       <>
         <Routes>
@@ -103,13 +107,15 @@ function App() {
             <Route path="blog-grid-2" element={<BlogsGridPage2 />} />
             <Route path="blog-list" element={<BlogsListPage />} />
             <Route path="blog-single/:id" element={<BlogsSinglePage />} />
+            <Route path="booking" element={<BookingPage />} />
 
             <Route path="*" element={<PageNotFoundPage />} />
           </Route>
         </Routes>
         <ScrollTopBehaviour />
       </>
-    </LoadScript>
+      </LoadScript>
+    </BookingProvider>
   );
 }
 

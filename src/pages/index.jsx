@@ -15,6 +15,7 @@ import Service from "@/components/homes/home-1/Service";
 import Testimonials from "@/components/common/testimonials/Testimonials2";
 import DownloadApp from "@/components/common/downloadApp/DownloadApp";
 
+
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
   title:

@@ -1,11 +1,13 @@
+// Hero.jsx
 
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import DatePickerComponent from "@/components/common/DatePicker";
 import PlacePicker from "@/components/common/PlacePicker";
 import TimePickerComponent from "@/components/common/TimePicker";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useNavigate } from "react-router-dom";
+import { BookingContext } from "@/components/booking/BookingContext";
 
 const banners = [
   {
@@ -34,8 +36,6 @@ const banners = [
   },
 ];
 
-
-
 export default function Hero() {
   const settings = {
     slidesPerView: 1,
@@ -56,10 +56,13 @@ export default function Hero() {
   };
 
   const navigate = useNavigate();
+  const { setBookingData } = useContext(BookingContext);
 
   // Initialize date and time as JavaScript Date objects
   const [date, setDate] = useState(new Date());
-  const [time, setTime] = useState(new Date(Date.now() + 2 * 60 * 60 * 1000)); // Current time + 2 hours
+  const [time, setTime] = useState(
+    new Date(Date.now() + 2 * 60 * 60 * 1000) // Current time + 2 hours
+  );
 
   const [fromAddress, setFromAddress] = useState("");
   const [toAddress, setToAddress] = useState("");
@@ -74,21 +77,25 @@ export default function Hero() {
 
     if (!date) validationErrors.date = "Please select a date.";
     if (!time) validationErrors.time = "Please select a time.";
-    if (!fromAddress) validationErrors.fromAddress = "Please enter a pickup location.";
-    if (!toAddress) validationErrors.toAddress = "Please enter a drop-off location.";
+    if (!fromAddress)
+      validationErrors.fromAddress = "Please enter a pickup location.";
+    if (!toAddress)
+      validationErrors.toAddress = "Please enter a drop-off location.";
 
     setErrors(validationErrors);
 
     // If there are no validation errors, proceed
     if (Object.keys(validationErrors).length === 0) {
-      navigate("/booking-vehicle", {
-        state: {
-          date: date.toISOString(),
-          time: time.toISOString(),
-          fromAddress,
-          toAddress,
-        },
-      });
+      // Store the initial booking data in context
+      setBookingData((prev) => ({
+        ...prev,
+        date: date.toISOString(),
+        time: time.toISOString(),
+        fromAddress,
+        toAddress,
+      }));
+
+      navigate("/booking-vehicle");
     }
   };
 
@@ -164,7 +171,9 @@ export default function Hero() {
           <div className="search-inputs">
             <label className="text-14 color-grey">From</label>
             <PlacePicker value={fromAddress} onChange={setFromAddress} />
-            {errors.fromAddress && <span className="error-text">{errors.fromAddress}</span>}
+            {errors.fromAddress && (
+              <span className="error-text">{errors.fromAddress}</span>
+            )}
           </div>
         </div>
         <div className="search-item search-to">
@@ -174,7 +183,9 @@ export default function Hero() {
           <div className="search-inputs">
             <label className="text-14 color-grey">To</label>
             <PlacePicker value={toAddress} onChange={setToAddress} />
-            {errors.toAddress && <span className="error-text">{errors.toAddress}</span>}
+            {errors.toAddress && (
+              <span className="error-text">{errors.toAddress}</span>
+            )}
           </div>
         </div>
         <div className="search-item search-button">
@@ -184,7 +195,10 @@ export default function Hero() {
             onClick={handleSearchClick}
             disabled={!isFormValid}
           >
-            <img src="/assets/imgs/template/icons/search.svg" alt="luxride" />
+            <img
+              src="/assets/imgs/template/icons/search.svg"
+              alt="luxride"
+            />
             Search
           </button>
         </div>

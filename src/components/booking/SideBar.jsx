@@ -1,43 +1,46 @@
 // SideBar.jsx
 
-import React, { useState, useEffect } from "react";
-import {
-  GoogleMap,
-  DirectionsRenderer,
-} from "@react-google-maps/api";
+import React, { useState, useEffect, useContext } from "react";
+import { GoogleMap, DirectionsRenderer } from "@react-google-maps/api";
 import PlacePicker from "@/components/common/PlacePicker";
 import DatePickerComponent from "@/components/common/DatePicker";
 import TimePickerComponent from "@/components/common/TimePicker";
+import { BookingContext } from "./BookingContext";
+import { FaUser, FaSuitcase } from "react-icons/fa"; // Using React Icons
 
 const containerStyle = {
   width: "100%",
   height: "200px",
 };
 
-export default function SideBar({
-  initialFromAddress,
-  initialToAddress,
-  initialDate,
-  initialTime,
-  setDistanceValue,
-  setDurationValue,
-}) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [fromAddress, setFromAddress] = useState("");
-  const [toAddress, setToAddress] = useState("");
-  const [date, setDate] = useState(initialDate ? new Date(initialDate) : null);
-  const [time, setTime] = useState(initialTime ? new Date(initialTime) : null);
+function SideBar() {
+  const { bookingData, setBookingData } = useContext(BookingContext);
+  const {
+    fromAddress,
+    toAddress,
+    date,
+    time,
+    directionsResponse,
+    distanceText,
+    durationText,
+    passengerInfo,
+    vehicle,
+    price,
+    cardLast4Digits,
+  } = bookingData;
 
-  const [distanceText, setDistanceText] = useState(null);
-  const [durationText, setDurationText] = useState(null);
-  const [directionsResponse, setDirectionsResponse] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
   const [isMapsApiLoaded, setIsMapsApiLoaded] = useState(false);
 
-  // Update addresses when initial props change
-  useEffect(() => {
-    setFromAddress(initialFromAddress || "");
-    setToAddress(initialToAddress || "");
-  }, [initialFromAddress, initialToAddress]);
+  // Local state for editing
+  const [localData, setLocalData] = useState({
+    fromAddress: fromAddress || "",
+    toAddress: toAddress || "",
+    date: date ? new Date(date) : null,
+    time: time ? new Date(time) : null,
+    passengers: passengerInfo?.passengers || 1,
+    luggage: passengerInfo?.luggage || 0,
+  });
 
   // Check if Google Maps API is loaded
   useEffect(() => {
@@ -57,7 +60,7 @@ export default function SideBar({
   // Calculate route when addresses change
   useEffect(() => {
     if (isMapsApiLoaded && fromAddress && toAddress) {
-      calculateRoute();
+      calculateRoute(fromAddress, toAddress);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMapsApiLoaded, fromAddress, toAddress]);
@@ -68,44 +71,72 @@ export default function SideBar({
 
   const handleSave = () => {
     setIsEditing(false);
-    if (isMapsApiLoaded && fromAddress && toAddress) {
-      calculateRoute();
+
+    setBookingData((prev) => ({
+      ...prev,
+      fromAddress: localData.fromAddress,
+      toAddress: localData.toAddress,
+      date: localData.date,
+      time: localData.time,
+      passengerInfo: {
+        ...(prev.passengerInfo || {}),
+        passengers: localData.passengers,
+        luggage: localData.luggage,
+      },
+      directionsResponse: null, // Reset directions
+    }));
+
+    if (isMapsApiLoaded && localData.fromAddress && localData.toAddress) {
+      calculateRoute(localData.fromAddress, localData.toAddress);
     }
   };
 
-  const calculateRoute = () => {
+  const calculateRoute = (origin, destination) => {
     if (!isMapsApiLoaded) {
       console.error("Google Maps API is not loaded yet.");
       return;
     }
 
-    if (fromAddress === "" || toAddress === "") {
+    if (origin === "" || destination === "") {
+      console.error("Origin or destination is empty.");
       return;
     }
+
+    console.log("Calculating route from:", origin, "to:", destination);
 
     const directionsService = new window.google.maps.DirectionsService();
 
     directionsService.route(
       {
-        origin: fromAddress,
-        destination: toAddress,
+        origin,
+        destination,
         travelMode: window.google.maps.TravelMode.DRIVING,
       },
       (result, status) => {
         if (status === "OK") {
-          setDirectionsResponse(result);
           const route = result.routes[0];
           const leg = route.legs[0];
-          setDistanceText(leg.distance.text);
-          setDurationText(leg.duration.text);
 
-          if (setDistanceValue) setDistanceValue(leg.distance.value);
-          if (setDurationValue) setDurationValue(leg.duration.value);
+          setBookingData((prev) => ({
+            ...prev,
+            directionsResponse: result,
+            distanceText: leg.distance.text,
+            durationText: leg.duration.text,
+            distanceValue: leg.distance.value,
+            durationValue: leg.duration.value,
+          }));
         } else {
           console.error(`Error fetching directions ${status}`);
         }
       }
     );
+  };
+
+  const handleInputChange = (field) => (value) => {
+    setLocalData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
   if (!isMapsApiLoaded) {
@@ -130,21 +161,63 @@ export default function SideBar({
             <div>
               <PlacePicker
                 label="Pickup Location"
-                value={fromAddress}
-                onChange={setFromAddress}
+                value={localData.fromAddress}
+                onChange={handleInputChange("fromAddress")}
               />
               <PlacePicker
                 label="Drop-off Location"
-                value={toAddress}
-                onChange={setToAddress}
+                value={localData.toAddress}
+                onChange={handleInputChange("toAddress")}
               />
               <div className="mb-3">
-                <label className="text-14 color-grey">Date</label>
-                <DatePickerComponent value={date} onChange={setDate} />
+                <label>Date</label>
+                <DatePickerComponent
+                  value={localData.date}
+                  onChange={handleInputChange("date")}
+                />
               </div>
               <div className="mb-3">
-                <label className="text-14 color-grey">Time</label>
-                <TimePickerComponent value={time} onChange={setTime} />
+                <label>Time</label>
+                <TimePickerComponent
+                  value={localData.time}
+                  onChange={handleInputChange("time")}
+                />
+              </div>
+              <div className="mb-3">
+                <label>
+                  <FaUser className="icon" /> Passengers
+                </label>
+                <select
+                  className="form-control"
+                  value={localData.passengers}
+                  onChange={(e) =>
+                    handleInputChange("passengers")(parseInt(e.target.value))
+                  }
+                >
+                  {[...Array(10)].map((_, idx) => (
+                    <option key={idx} value={idx + 1}>
+                      {idx + 1}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="mb-3">
+                <label>
+                  <FaSuitcase className="icon" /> Luggage
+                </label>
+                <select
+                  className="form-control"
+                  value={localData.luggage}
+                  onChange={(e) =>
+                    handleInputChange("luggage")(parseInt(e.target.value))
+                  }
+                >
+                  {[...Array(10)].map((_, idx) => (
+                    <option key={idx} value={idx}>
+                      {idx}
+                    </option>
+                  ))}
+                </select>
               </div>
               <button className="btn btn-primary" onClick={handleSave}>
                 Save
@@ -194,10 +267,35 @@ export default function SideBar({
                 </li>
               </ul>
 
+              {/* Display Passenger and Luggage Information */}
+              {passengerInfo && (
+                <div className="passenger-luggage-info mt-20">
+                  <div className="d-flex justify-content-between">
+                    <div
+                      className="info-item"
+                      style={{ display: "flex", alignItems: "center" }}
+                    >
+                      <FaUser style={{ marginRight: "5px" }} />
+                      <span className="info-text text-14-medium">
+                        {passengerInfo.passengers}
+                      </span>
+                    </div>
+                    <div
+                      className="info-item"
+                      style={{ display: "flex", alignItems: "center" }}
+                    >
+                      <FaSuitcase style={{ marginRight: "5px" }} />
+                      <span className="info-text text-14-medium">
+                        {passengerInfo.luggage}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {directionsResponse && (
                 <div className="mt-20">
                   <GoogleMap
-                    key={`${fromAddress}-${toAddress}`} // Add key to force re-render
                     mapContainerStyle={containerStyle}
                     options={{
                       disableDefaultUI: true,
@@ -229,6 +327,44 @@ export default function SideBar({
                   </span>
                 </div>
               </div>
+
+              {/* Display Vehicle and Price */}
+              {vehicle && price && (
+                <div className="vehicle-price-info mt-20">
+                  <div className="info-item">
+                    <span className="text-14 color-grey">Vehicle: </span>
+                    <span className="text-14-medium color-text">
+                      {vehicle.title}
+                    </span>
+                  </div>
+                  <div className="info-item">
+                    <span className="text-14 color-grey">Price: </span>
+                    <span className="text-14-medium color-text">
+                      ${price}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Display Card Last 4 Digits and Passenger Name */}
+              {cardLast4Digits && passengerInfo && (
+                <div className="payment-info mt-20">
+                  <div className="info-item">
+                    <span className="text-14 color-grey">
+                      Card Ending With:
+                    </span>
+                    <span className="text-14-medium color-text">
+                      **** **** **** {cardLast4Digits}
+                    </span>
+                  </div>
+                  <div className="info-item">
+                    <span className="text-14 color-grey">Passenger:</span>
+                    <span className="text-14-medium color-text">
+                      {passengerInfo.firstName} {passengerInfo.lastName}
+                    </span>
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>
@@ -236,3 +372,5 @@ export default function SideBar({
     </div>
   );
 }
+
+export default React.memo(SideBar);

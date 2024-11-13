@@ -1,24 +1,25 @@
 // PassengerDetails.jsx
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import SideBar from "./SideBar";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { BookingContext } from "./BookingContext";
 
 export default function PassengerDetails() {
-  const location = useLocation();
   const navigate = useNavigate();
+  const { bookingData, setBookingData } = useContext(BookingContext);
 
-  const bookingDetails = location.state || {};
-
-  const [passengerInfo, setPassengerInfo] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    passengers: 1,
-    luggage: 0,
-    notes: "",
-  });
+  const [passengerInfo, setPassengerInfo] = useState(
+    bookingData.passengerInfo || {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      passengers: 1,
+      luggage: 0,
+      notes: "",
+    }
+  );
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -26,9 +27,8 @@ export default function PassengerDetails() {
   };
 
   const handleContinue = () => {
-    navigate("/booking-payment", {
-      state: { ...bookingDetails, passengerInfo },
-    });
+    setBookingData((prev) => ({ ...prev, passengerInfo }));
+    navigate("/booking-payment");
   };
 
   useEffect(() => {
@@ -43,140 +43,121 @@ export default function PassengerDetails() {
             Passenger Details
           </h3>
           <div className="form-contact form-comment">
-            <form onSubmit={(e) => e.preventDefault()}>
-              <div className="row">
-                <div className="col-lg-6">
-                  <div className="form-group">
-                    <label className="form-label" htmlFor="firstName">
-               
-                    </label>
-                    <input
-                      className="form-control"
-                      id="firstName"
-                      name="firstName"
-                      type="text"
-                      placeholder="First name"
-                      value={passengerInfo.firstName}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                </div>
-                <div className="col-lg-6">
-                  <div className="form-group">
-                    <label className="form-label" htmlFor="lastName">
-                      
-                    </label>
-                    <input
-                      className="form-control"
-                      id="lastName"
-                      name="lastName"
-                      type="text"
-                      placeholder="Last Name"
-                      value={passengerInfo.lastName}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                </div>
-                <div className="col-lg-6">
-                  <div className="form-group">
-                    <label className="form-label" htmlFor="email">
-                      
-                    </label>
-                    <input
-                      className="form-control"
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="Email Address"
-                      value={passengerInfo.email}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                </div>
-                <div className="col-lg-6">
-                  <div className="form-group">
-                    <label className="form-label" htmlFor="phone">
-                      
-                    </label>
-                    <input
-                      className="form-control"
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      placeholder="Phone Number"
-                      value={passengerInfo.phone}
-                      onChange={handleInputChange}
-                    />
-                  </div>
+            <div className="row">
+              <div className="col-lg-6">
+                <div className="form-group">
+                  <input
+                    className="form-control"
+                    id="firstName"
+                    name="firstName"
+                    type="text"
+                    placeholder="First Name"
+                    value={passengerInfo.firstName}
+                    onChange={handleInputChange}
+                  />
                 </div>
               </div>
-            </form>
+              <div className="col-lg-6">
+                <div className="form-group">
+                  <input
+                    className="form-control"
+                    id="lastName"
+                    name="lastName"
+                    type="text"
+                    placeholder="Last Name"
+                    value={passengerInfo.lastName}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+              <div className="col-lg-6">
+                <div className="form-group">
+                  <input
+                    className="form-control"
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="Email Address"
+                    value={passengerInfo.email}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+              <div className="col-lg-6">
+                <div className="form-group">
+                  <input
+                    className="form-control"
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    placeholder="Phone Number"
+                    value={passengerInfo.phone}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
           <div className="mt-30"></div>
-          <h3 className="heading-24-medium color-text mb-30">
-            Options
-          </h3>
+          <h3 className="heading-24-medium color-text mb-30">Options</h3>
           <div className="form-contact form-comment">
-            <form onSubmit={(e) => e.preventDefault()}>
-              <div className="row">
-                <div className="col-lg-6">
-                  <div className="form-group">
-                    <label className="form-label" htmlFor="passengers">
+            <div className="row">
+              <div className="col-lg-6">
+                <div className="form-group">
+                  Passengers
+                  <select
+                    className="form-control"
+                    id="passengers"
+                    name="passengers"
+                    value={passengerInfo.passengers}
+                    onChange={handleInputChange}
+                  >
+                    <option value="" disabled>
                       Number of Passengers
-                    </label>
-                    <select
-                      className="form-control"
-                      id="passengers"
-                      name="passengers"
-                      value={passengerInfo.passengers}
-                      onChange={handleInputChange}
-                    >
-                      {[...Array(10)].map((_, idx) => (
-                        <option key={idx} value={idx + 1}>
-                          {idx + 1}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                <div className="col-lg-6">
-                  <div className="form-group">
-                    <label className="form-label" htmlFor="luggage">
-                      Number of Luggage Items
-                    </label>
-                    <select
-                      className="form-control"
-                      id="luggage"
-                      name="luggage"
-                      value={passengerInfo.luggage}
-                      onChange={handleInputChange}
-                    >
-                      {[...Array(10)].map((_, idx) => (
-                        <option key={idx} value={idx}>
-                          {idx}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                <div className="col-lg-12">
-                  <div className="form-group">
-                    <label className="form-label" htmlFor="notes">
-                      
-                    </label>
-                    <textarea
-                      className="form-control"
-                      id="notes"
-                      name="notes"
-                      rows="5"
-                      placeholder="Notes to Driver..."
-                      value={passengerInfo.notes}
-                      onChange={handleInputChange}
-                    ></textarea>
-                  </div>
+                    </option>
+                    {[...Array(10)].map((_, idx) => (
+                      <option key={idx} value={idx + 1}>
+                        {idx + 1}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
-            </form>
+              <div className="col-lg-6">
+                <div className="form-group">
+                  Luggage
+                  <select
+                    className="form-control"
+                    id="luggage"
+                    name="luggage"
+                    value={passengerInfo.luggage}
+                    onChange={handleInputChange}
+                  >
+                    <option value="" disabled>
+                      Number of Luggage Items
+                    </option>
+                    {[...Array(10)].map((_, idx) => (
+                      <option key={idx} value={idx}>
+                        {idx}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="col-lg-12">
+                <div className="form-group">
+                  <textarea
+                    className="form-control"
+                    id="notes"
+                    name="notes"
+                    rows="5"
+                    placeholder="Notes to Driver..."
+                    value={passengerInfo.notes}
+                    onChange={handleInputChange}
+                  ></textarea>
+                </div>
+              </div>
+            </div>
           </div>
           <div className="mt-30 mb-120">
             <button
@@ -203,13 +184,7 @@ export default function PassengerDetails() {
           </div>
         </div>
       </div>
-      <SideBar
-        initialFromAddress={bookingDetails.fromAddress}
-        initialToAddress={bookingDetails.toAddress}
-        initialDate={bookingDetails.date}
-        initialTime={bookingDetails.time}
-        passengerInfo={passengerInfo}
-      />
+      <SideBar />
     </div>
   );
 }
