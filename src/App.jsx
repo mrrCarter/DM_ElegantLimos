@@ -35,7 +35,7 @@ import BlogsGridPage1 from "./pages/blogs/blog-grid";
 import BlogsGridPage2 from "./pages/blogs/blog-grid-2";
 import BlogsListPage from "./pages/blogs/blog-list";
 import BlogsSinglePage from "./pages/blogs/blog-single";
-import BookingRecevedPage from "./pages/booking/booking-receved";
+import BookingRecevedPage from "./pages/booking/booking-receved"; 
 import BookingPage from "./pages/booking-page";
 import WOW from "wow.js";
 import { BookingProvider } from "./components/booking/BookingContext";
