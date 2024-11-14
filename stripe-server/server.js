@@ -12,8 +12,11 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 app.use(cors());
 app.use(express.json());
 
-// Serve static files from the dist directory
-app.use(express.static(path.join(__dirname, "dist")));
+// Define the path to the 'dist' directory
+const distPath = path.join(__dirname, "..", "dist");
+
+// Serve static files from the 'dist' directory
+app.use(express.static(distPath));
 
 app.post("/create-payment-intent", async (req, res) => {
   const { amount } = req.body;
@@ -40,7 +43,7 @@ app.post("/create-payment-intent", async (req, res) => {
 
 // Serve the index.html file for any unknown routes
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "index.html"));
+  res.sendFile(path.join(distPath, "index.html"));
 });
 
 const PORT = process.env.PORT || 4242;
