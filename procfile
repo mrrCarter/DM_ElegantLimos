@@ -1,1 +1,1 @@
-web: npm start
+web: cd stripe-server && npm install && npm start
