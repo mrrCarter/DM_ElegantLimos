@@ -5,9 +5,9 @@ require("dotenv").config(); // Load environment variables
 const express = require("express");
 const path = require("path");
 const cors = require("cors");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 app.use(cors());
 app.use(express.json());
