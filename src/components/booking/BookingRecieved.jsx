@@ -86,7 +86,6 @@ export default function BookingReceived() {
     const templateParams = {
       to_email: passengerInfo?.email || "info@dmelegantlimos.com",
       order_number: `#${orderNumber}`, // Use the generated order number
-      date: new Date().toLocaleDateString(),
       fromAddress,
       toAddress,
       date: date ? new Date(date).toLocaleDateString() : "",
