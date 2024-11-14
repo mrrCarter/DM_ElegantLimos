@@ -1,6 +1,6 @@
 // App.jsx
 
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import "./styles/style.scss";
 import { Route, Routes, useLocation } from "react-router-dom";
 import Home from "./pages";
@@ -39,10 +39,7 @@ import BookingRecevedPage from "./pages/booking/booking-receved";
 import BookingPage from "./pages/booking-page";
 import WOW from "wow.js";
 import { BookingProvider } from "./components/booking/BookingContext";
-
-import { LoadScript } from "@react-google-maps/api"; // Import LoadScript
-
-const libraries = ["places"];
+import WhatsAppFloatingButton from "./components/WhatsAppFloatingButton";
 
 function App() {
   const { pathname } = useLocation();
@@ -64,57 +61,26 @@ function App() {
 
   return (
     <BookingProvider>
-    <LoadScript
-      googleMapsApiKey="AIzaSyAU4OiURduvgpZfhLSJVy2Ga2xjJcwVTAg" // Replace with your API key
-      libraries={libraries}
-      loadingElement={<div>Loading Maps...</div>}
-    >
-      <>
-        <Routes>
-          <Route path="/">
-            <Route index element={<Home />} />
+      <WhatsAppFloatingButton />
+      <Routes>
+        <Route path="/">
+          <Route index element={<Home />} />
 
-            <Route path="about" element={<AboutPage1 />} />
-            <Route path="about-2" element={<AboutPage2 />} />
+
             <Route path="contact" element={<ContactPage1 />} />
-            <Route path="contact-2" element={<ContactPage2 />} />
-            <Route path="our-team" element={<OurTeamPage />} />
-            <Route path="team-single/:id" element={<TeamSinglePage />} />
-            <Route path="register" element={<RegisterPage />} />
-            <Route path="login" element={<LoginPage />} />
-            <Route path="pricing" element={<PricingPage />} />
-            <Route path="coming-soon" element={<CommingSoonPage />} />
-            <Route path="page-not-found" element={<PageNotFoundPage />} />
-            <Route path="booking-vehicle" element={<BookingVehiclePage />} />
-            <Route path="booking-extra" element={<BookingExtraPage />} />
-            <Route path="booking-passenger" element={<BookingPassengerPage />} />
-            <Route path="booking-payment" element={<BookingPaymentPage />} />
             <Route path="booking-receved" element={<BookingRecevedPage />} />
             <Route path="invoice" element={<InvoicePage />} />
 
             <Route path="fleet-list" element={<FleetListPage1 />} />
-            <Route path="fleet-list-2" element={<FleetListPage2 />} />
-            <Route path="fleet-list-3" element={<FleetListPage3 />} />
-            <Route path="fleet-list-4" element={<FleetListPage4 />} />
-            <Route path="fleet-single/:id" element={<FleetSinglePage />} />
 
-            <Route path="service-grid" element={<ServiceGridPage1 />} />
-            <Route path="service-grid-2" element={<ServiceGridPage2 />} />
-            <Route path="service-grid-3" element={<ServiceGridPage3 />} />
-            <Route path="service-single/:id" element={<ServiceSinglePage />} />
+            {/* Update the parent route with trailing '*' to handle nested routes */}
+            <Route path="booking/*" element={<BookingPage />} />
 
-            <Route path="blog-grid" element={<BlogsGridPage1 />} />
-            <Route path="blog-grid-2" element={<BlogsGridPage2 />} />
-            <Route path="blog-list" element={<BlogsListPage />} />
-            <Route path="blog-single/:id" element={<BlogsSinglePage />} />
-            <Route path="booking" element={<BookingPage />} />
-
+            {/* Wildcard route for 404 Not Found */}
             <Route path="*" element={<PageNotFoundPage />} />
           </Route>
         </Routes>
-        <ScrollTopBehaviour />
-      </>
-      </LoadScript>
+      <ScrollTopBehaviour />
     </BookingProvider>
   );
 }

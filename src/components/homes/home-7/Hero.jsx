@@ -80,7 +80,7 @@ export default function Hero() {
         </div>
         <div className="row">
           <div className="col-lg-7">
-            <div className="box-number-banner">
+            {/* <div className="box-number-banner">
               {facts.map((elm, i) => (
                 <div key={i} className="number-1 wow fadeInUp">
                   <h3 className="heading-44-medium color-white">
@@ -89,7 +89,7 @@ export default function Hero() {
                   <p className="text-20 color-white">{elm.text}</p>
                 </div>
               ))}
-            </div>
+            </div> */}
           </div>
           <div className="col-lg-5">
             <div className="box-some-number wow fadeInUp">

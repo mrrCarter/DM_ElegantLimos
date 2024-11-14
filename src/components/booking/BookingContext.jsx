@@ -1,6 +1,6 @@
 // BookingContext.jsx
 
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useEffect } from "react";
 
 export const BookingContext = createContext();
 
@@ -16,7 +16,7 @@ export const BookingProvider = ({ children }) => {
       firstName: "",
       lastName: "",
       email: "",
-      phoneNumber: "",
+      phone: "",
     },
     vehicle: null,
     price: null,
@@ -25,9 +25,23 @@ export const BookingProvider = ({ children }) => {
     directionsResponse: null,
     selectedExtras: null,
     cardLast4Digits: null,
-    gratuityPercentage: 0,
+    gratuityPercentage: 20,
     totalPrice: null,
+    currentStep: 1,
   });
+
+  useEffect(() => {
+    const basePrice = parseFloat(bookingData.price) || 0;
+    const gratuityPercent = bookingData.gratuityPercentage || 0;
+
+    const gratuityAmount = (gratuityPercent / 100) * basePrice;
+    const total = basePrice + gratuityAmount;
+
+    setBookingData((prev) => ({
+      ...prev,
+      totalPrice: total.toFixed(2),
+    }));
+  }, [bookingData.price, bookingData.gratuityPercentage]);
 
   return (
     <BookingContext.Provider value={{ bookingData, setBookingData }}>

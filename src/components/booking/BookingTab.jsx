@@ -1,44 +1,54 @@
+// BookingTab.jsx
+
 import React from "react";
 
-export default function BookingTab({ currentStep, setCurrentStep }) {
-  const steps = [
-    { step: 1, label: "Vehicle" },
-    { step: 2, label: "Passenger" },
-    { step: 3, label: "Payment" },
-  ];
+const tabs = [
+  {
+    id: 1,
+    iconClass: "icon-book icon-vehicle",
+    text: "Vehicle",
+    number: "01",
+  },
+  {
+    id: 2,
+    iconClass: "icon-book icon-pax",
+    text: "Details",
+    number: "02",
+  },
+  {
+    id: 3,
+    iconClass: "icon-book icon-payment",
+    text: "Payment",
+    number: "03",
+  },
+];
 
-  const handleStepClick = (step) => {
-    // Allow navigation to previous steps or the current step
-    if (step <= currentStep) {
+export default function BookingTab({ currentStep, setCurrentStep, highestStep }) {
+  const handleTabClick = (step) => {
+    if (step <= highestStep) {
       setCurrentStep(step);
     }
   };
 
   return (
     <div className="box-booking-tabs">
-      {steps.map(({ step, label }, index) => (
-        <div key={step} className="item-tab wow fadeInUp">
+      {tabs.map((elm) => (
+        <div key={elm.id} className="item-tab wow fadeInUp">
           <div
-            className={`box-tab-step ${currentStep >= step ? "active" : ""} ${
-              step > currentStep ? "disabled" : ""
-            }`}
-            onClick={() => handleStepClick(step)}
-            style={{ cursor: step <= currentStep ? "pointer" : "not-allowed" }}
+            className={`box-tab-step ${
+              currentStep === elm.id ? "active" : ""
+            } ${highestStep >= elm.id ? "" : "disabled"}`}
+            onClick={() => handleTabClick(elm.id)}
+            style={{
+              cursor: highestStep >= elm.id ? "pointer" : "not-allowed",
+            }}
           >
             <div className="icon-tab">
-              <span
-                className={
-                  step === 1
-                    ? "icon-book icon-vehicle"
-                    : step === 2
-                    ? "icon-book icon-pax"
-                    : "icon-book icon-payment"
-                }
-              > </span>
-              <span className="text-tab">{label} </span>
+              <span className={elm.iconClass}> </span>
+              <span className="text-tab">{elm.text} </span>
             </div>
             <div className="number-tab">
-              <span>0{step}</span>
+              <span>{elm.number}</span>
             </div>
           </div>
         </div>

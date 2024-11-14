@@ -6,11 +6,23 @@ import PlacePicker from "@/components/common/PlacePicker";
 import DatePickerComponent from "@/components/common/DatePicker";
 import TimePickerComponent from "@/components/common/TimePicker";
 import { BookingContext } from "./BookingContext";
-import { FaUser, FaSuitcase } from "react-icons/fa"; // Using React Icons
+import { FaUser, FaSuitcase } from "react-icons/fa";
 
 const containerStyle = {
   width: "100%",
   height: "200px",
+};
+
+// Function to format phone numbers
+const formatPhoneNumber = (phoneNumber) => {
+  if (!phoneNumber) return "";
+  // Assuming phoneNumber is a 10-digit number
+  const cleaned = ("" + phoneNumber).replace(/\D/g, "");
+  const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+  if (match) {
+    return `(${match[1]}) ${match[2]}-${match[3]}`;
+  }
+  return phoneNumber;
 };
 
 function SideBar() {
@@ -26,11 +38,15 @@ function SideBar() {
     passengerInfo,
     vehicle,
     price,
+    gratuityPercentage,
+    totalPrice,
     cardLast4Digits,
+    currentStep,
   } = bookingData;
 
   const [isEditing, setIsEditing] = useState(false);
   const [isMapsApiLoaded, setIsMapsApiLoaded] = useState(false);
+  // console.log("Phone number", passengerInfo?.phone);
 
   // Local state for editing
   const [localData, setLocalData] = useState({
@@ -67,6 +83,18 @@ function SideBar() {
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
+
+    // Reset local data when entering edit mode
+    if (!isEditing) {
+      setLocalData({
+        fromAddress: fromAddress || "",
+        toAddress: toAddress || "",
+        date: date ? new Date(date) : null,
+        time: time ? new Date(time) : null,
+        passengers: passengerInfo?.passengers || 1,
+        luggage: passengerInfo?.luggage || 0,
+      });
+    }
   };
 
   const handleSave = () => {
@@ -83,7 +111,9 @@ function SideBar() {
         passengers: localData.passengers,
         luggage: localData.luggage,
       },
-      directionsResponse: null, // Reset directions
+      directionsResponse: null, // Reset directions to trigger recalculation
+      distanceText: null,
+      durationText: null,
     }));
 
     if (isMapsApiLoaded && localData.fromAddress && localData.toAddress) {
@@ -101,8 +131,6 @@ function SideBar() {
       console.error("Origin or destination is empty.");
       return;
     }
-
-    console.log("Calculating route from:", origin, "to:", destination);
 
     const directionsService = new window.google.maps.DirectionsService();
 
@@ -157,6 +185,22 @@ function SideBar() {
         </div>
 
         <div className="mt-20">
+          {/* Display Client Name */}
+          {passengerInfo?.firstName && (
+            <div className="client-name mb-2">
+              <strong>
+                {`${passengerInfo.firstName} ${passengerInfo.lastName}`}
+              </strong>
+              {passengerInfo.phone && (
+                <div>
+                  <a href={`tel:${passengerInfo.phone}`} className="ml-2">
+                    {formatPhoneNumber(passengerInfo.phone)}
+                  </a>
+                </div>
+              )}
+            </div>
+          )}
+
           {isEditing ? (
             <div>
               <PlacePicker
@@ -225,6 +269,7 @@ function SideBar() {
             </div>
           ) : (
             <>
+              {/* Display the ride summary */}
               <ul className="list-routes">
                 <li>
                   <span className="location-item">A </span>
@@ -290,6 +335,13 @@ function SideBar() {
                       </span>
                     </div>
                   </div>
+                  {/* Note to Driver */}
+                  {passengerInfo.notes && (
+                    <div className="mt-2">
+                      <strong>Note to Driver:</strong>
+                      <p className="text-14-medium">{passengerInfo.notes}</p>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -338,11 +390,33 @@ function SideBar() {
                     </span>
                   </div>
                   <div className="info-item">
-                    <span className="text-14 color-grey">Price: </span>
+                    <span className="text-14 color-grey">Base Price: </span>
                     <span className="text-14-medium color-text">
-                      ${price}
+                      ${parseFloat(price).toFixed(2)}
                     </span>
                   </div>
+                  {/* Display Gratuity and Total Price */}
+                  {totalPrice && (
+                    <>
+                      <div className="info-item">
+                        <span className="text-14 color-grey">
+                          Gratuity ({gratuityPercentage}%):{" "}
+                        </span>
+                        <span className="text-14-medium color-text">
+                          $
+                          {(
+                            (gratuityPercentage / 100) * parseFloat(price)
+                          ).toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="info-item">
+                        <span className="text-14 color-grey">Total Price: </span>
+                        <span className="text-14-medium color-text">
+                          ${parseFloat(totalPrice).toFixed(2)}
+                        </span>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
 

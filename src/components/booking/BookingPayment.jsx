@@ -1,28 +1,25 @@
 // BookingPayment.jsx
+
 import React, { useEffect, useState, useContext } from "react";
-import SideBar from "./SideBar";
-import { useNavigate } from "react-router-dom";
 import { BookingContext } from "./BookingContext";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  Elements,
+  CardElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
+import { useNavigate } from "react-router-dom";
 
-// Import Stripe components
-// Commented out for now since we're bypassing payment processing
-// import { loadStripe } from "@stripe/stripe-js";
-// import {
-//   Elements,
-//   CardElement,
-//   useStripe,
-//   useElements,
-// } from "@stripe/react-stripe-js";
 
-// Comment out the Stripe initialization
-// const stripePromise = loadStripe("YOUR_PUBLISHABLE_KEY"); // Replace with your Stripe publishable key
+// Load Stripe publishable key from environment variables
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
-function CheckoutForm() {
-  // Comment out the Stripe hooks
-  // const stripe = useStripe();
-  // const elements = useElements();
-  const navigate = useNavigate();
+function CheckoutForm({ onNext, onBack }) {
+  const stripe = useStripe();
+  const elements = useElements();
   const { bookingData, setBookingData } = useContext(BookingContext);
+  const navigate = useNavigate();
 
   const [billingInfo, setBillingInfo] = useState({
     name: bookingData.passengerInfo
@@ -37,7 +34,12 @@ function CheckoutForm() {
   });
 
   // Use gratuityPercentage from BookingContext
-  const { gratuityPercentage } = bookingData;
+  const [gratuityPercentage, setGratuityPercentage] = useState(
+    bookingData.gratuityPercentage || 20
+  );
+
+  const [loading, setLoading] = useState(false); // For loading indicator
+  const [errorMessage, setErrorMessage] = useState(""); // For error handling
 
   // Function to handle changes in the billing info
   const handleInputChange = (e) => {
@@ -47,7 +49,9 @@ function CheckoutForm() {
 
   // Function to handle changes in gratuity
   const handleGratuityChange = (e) => {
-    const value = e.target.value;
+    let value = parseFloat(e.target.value);
+    if (value < 20) value = 20;
+    setGratuityPercentage(value);
     setBookingData((prev) => ({
       ...prev,
       gratuityPercentage: value,
@@ -57,7 +61,7 @@ function CheckoutForm() {
   // Function to calculate total price
   useEffect(() => {
     const basePrice = parseFloat(bookingData.price) || 0;
-    const gratuityPercent = parseFloat(bookingData.gratuityPercentage) || 0;
+    const gratuityPercent = gratuityPercentage || 0;
 
     const gratuityAmount = (gratuityPercent / 100) * basePrice;
     const total = basePrice + gratuityAmount;
@@ -66,40 +70,229 @@ function CheckoutForm() {
       ...prev,
       totalPrice: total.toFixed(2),
     }));
-  }, [bookingData.price, bookingData.gratuityPercentage, setBookingData]);
+  }, [bookingData.price, gratuityPercentage, setBookingData]);
 
   // Function to handle form submission
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Navigate directly to the booking received page
-    navigate("/booking-receved");
+    if (!stripe || !elements) {
+      // Stripe.js has not yet loaded.
+      return;
+    }
+
+    setLoading(true);
+    setErrorMessage(""); // Reset error message
+
+    try {
+      // Create PaymentIntent on the server
+      const response = await fetch(
+        "http://localhost:4242/create-payment-intent",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            amount: Math.round(bookingData.totalPrice * 100), // Convert to cents
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to create payment intent");
+      }
+
+      const { clientSecret } = await response.json();
+
+      // Confirm the payment on the client
+      const result = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: elements.getElement(CardElement),
+          billing_details: {
+            name: billingInfo.name,
+            email: billingInfo.email,
+            address: {
+              line1: billingInfo.address,
+              city: billingInfo.city,
+              state: billingInfo.state,
+              country: billingInfo.country,
+              postal_code: billingInfo.postalCode,
+            },
+          },
+        },
+      });
+
+      if (result.error) {
+        // Show error to your customer (e.g., insufficient funds)
+        console.error(result.error.message);
+        setErrorMessage(result.error.message);
+        setLoading(false);
+      } else {
+        if (result.paymentIntent.status === "succeeded") {
+          // Payment succeeded
+
+          // Ensure charges and payment_method_details exist
+          const charges = result.paymentIntent.charges;
+          if (charges && charges.data && charges.data.length > 0) {
+            const paymentMethodDetails = charges.data[0].payment_method_details;
+            const last4 = paymentMethodDetails.card?.last4 || "N/A";
+
+            // Save the last 4 digits of the card
+            setBookingData((prev) => ({
+              ...prev,
+              cardLast4Digits: last4,
+            }));
+          } else {
+            console.warn("Charges data not available.");
+          }
+
+          // Navigate to booking-received page
+          setLoading(false);
+          navigate("/booking-receved");
+        }
+      }
+    } catch (error) {
+      console.error("Payment processing error:", error);
+      setErrorMessage("Payment failed. Please try again.");
+      setLoading(false);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit}>
       {/* Billing Information Form */}
-      {/* ... existing billing info form fields ... */}
+      <div className="form-contact form-comment">
+        <h3 className="heading-20-medium color-text mb-20">
+          Billing Information
+        </h3>
+        <div className="row">
+          {/* Name */}
+          <div className="col-lg-6">
+            <div className="form-group">
+              <input
+                className="form-control"
+                id="name"
+                name="name"
+                type="text"
+                placeholder="Full Name"
+                value={billingInfo.name}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+          </div>
+          {/* Email */}
+          <div className="col-lg-6">
+            <div className="form-group">
+              <input
+                className="form-control"
+                id="email"
+                name="email"
+                type="email"
+                placeholder="Email"
+                value={billingInfo.email}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+          </div>
+        </div>
+        {/* Separator */}
+        <hr className="my-4" />
+        <h4 className="heading-20-medium color-text mb-20">Billing Address</h4>
+        <div className="row">
+          {/* Address */}
+          <div className="col-lg-12">
+            <div className="form-group">
+              <input
+                className="form-control"
+                id="address"
+                name="address"
+                type="text"
+                placeholder="Street address"
+                value={billingInfo.address}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
+          {/* City */}
+          <div className="col-lg-4">
+            <div className="form-group">
+              <input
+                className="form-control"
+                id="city"
+                name="city"
+                type="text"
+                placeholder="City"
+                value={billingInfo.city}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
+          {/* State */}
+          <div className="col-lg-4">
+            <div className="form-group">
+              <input
+                className="form-control"
+                id="state"
+                name="state"
+                type="text"
+                placeholder="State"
+                value={billingInfo.state}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
+          {/* Postal Code */}
+          <div className="col-lg-4">
+            <div className="form-group">
+              <input
+                className="form-control"
+                id="postalCode"
+                name="postalCode"
+                type="text"
+                placeholder="Postal Code"
+                value={billingInfo.postalCode}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
+          {/* Country */}
+          <div className="col-lg-12">
+            <div className="form-group">
+              <input
+                className="form-control"
+                id="country"
+                name="country"
+                type="text"
+                placeholder="Country"
+                value={billingInfo.country}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Gratuity Field */}
       <div className="form-contact form-comment">
         <div className="row">
           {/* Gratuity Percentage */}
-          <div className="col-lg-6">
+          <div className="col-lg-4">
+            <label htmlFor="gratuity">Gratuity (%)</label>
             <div className="form-group">
-              <label htmlFor="gratuity">Gratuity (%)</label>
-              <div className="input-group">
-                <input
-                  className="form-control"
-                  id="gratuity"
-                  name="gratuity"
-                  type="number"
-                  min="0"
-                  placeholder="Gratuity Percentage"
-                  value={gratuityPercentage}
-                  onChange={handleGratuityChange}
-                />
-              </div>
+              <input
+                className="form-control"
+                id="gratuity"
+                name="gratuity"
+                type="number"
+                min="20"
+                placeholder="Gratuity Percentage"
+                value={gratuityPercentage}
+                onChange={handleGratuityChange}
+                required
+              />
             </div>
           </div>
         </div>
@@ -107,7 +300,9 @@ function CheckoutForm() {
 
       {/* Price Breakdown */}
       <div className="price-breakdown mt-30">
-        <h4 className="heading-24-medium color-text mb-20">Price Breakdown</h4>
+        <h4 className="heading-24-medium color-text mb-20">
+          Price Breakdown
+        </h4>
         <ul className="list-group">
           <li className="list-group-item">
             Base Price: ${parseFloat(bookingData.price).toFixed(2)}
@@ -115,8 +310,7 @@ function CheckoutForm() {
           <li className="list-group-item">
             Gratuity ({gratuityPercentage}%): $
             {(
-              (gratuityPercentage / 100) *
-              parseFloat(bookingData.price)
+              (gratuityPercentage / 100) * parseFloat(bookingData.price)
             ).toFixed(2)}
           </li>
           <li className="list-group-item font-weight-bold">
@@ -133,8 +327,6 @@ function CheckoutForm() {
       </h3>
 
       {/* Payment Information */}
-      {/* Commented out CardElement since we're not processing payments */}
-      {/* 
       <div className="form-contact form-comment">
         <div className="form-group">
           <CardElement
@@ -155,50 +347,53 @@ function CheckoutForm() {
           />
         </div>
       </div>
-      */}
+
+      {/* Display error message */}
+      {errorMessage && (
+        <div className="alert alert-danger mt-3">{errorMessage}</div>
+      )}
 
       <div className="mt-30 mb-120">
-        <button
-          className="btn btn-primary btn-primary-big w-100"
-          type="submit"
-          // Remove the disabled condition since stripe is undefined
-          // disabled={!stripe}
-        >
-          Pay Now
-          <svg
-            className="icon-16 ml-5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
+        <div className="d-flex justify-content-between">
+          <button className="btn btn-secondary" onClick={onBack} disabled={loading}>
+            Back
+          </button>
+          <button
+            className="btn btn-primary"
+            type="submit"
+            disabled={!stripe || loading}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"
-            ></path>
-          </svg>
-        </button>
+            {loading ? "Processing..." : "Pay Now"}
+            {!loading && (
+              <svg
+                className="icon-16 ml-5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"
+                ></path>
+              </svg>
+            )}
+          </button>
+        </div>
       </div>
     </form>
   );
 }
 
-export default function BookingPayment() {
+export default function BookingPayment({ onNext, onBack }) {
   return (
-    <div className="box-row-tab mt-50">
-      <div className="box-tab-left">
-        <div className="box-content-detail">
-          {/* Remove the Elements wrapper since we're not using Stripe */}
-          {/* <Elements stripe={stripePromise}>
-            <CheckoutForm />
-          </Elements> */}
-          <CheckoutForm />
-        </div>
-      </div>
-      <SideBar />
-    </div>
+    <>
+      <Elements stripe={stripePromise}>
+        <CheckoutForm onNext={onNext} onBack={onBack} />
+      </Elements>
+    </>
   );
 }

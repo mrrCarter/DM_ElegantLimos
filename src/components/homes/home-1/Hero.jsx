@@ -95,7 +95,7 @@ export default function Hero() {
         toAddress,
       }));
 
-      navigate("/booking-vehicle");
+      navigate("/booking");
     }
   };
 
@@ -197,7 +197,7 @@ export default function Hero() {
           >
             <img
               src="/assets/imgs/template/icons/search.svg"
-              alt="luxride"
+              alt="dmelegantlimos"
             />
             Search
           </button>

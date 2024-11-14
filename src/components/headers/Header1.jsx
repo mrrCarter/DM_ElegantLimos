@@ -53,29 +53,16 @@ export default function Header1() {
                 <span className="burger-icon-bottom"></span>
               </div>
             </div>
-            {/* <div className="header-right">
-              <div className="d-none d-xxl-inline-block align-middle mr-10">
+            <div className="header-right">
+              <div className="align-middle mr-10">
                 <a
-                  className="text-14-medium call-phone color-white hover-up"
-                  href="tel:+41227157000"
+                  className="text-14-medium call-phone color-white hover-up d-inline"
+                  href="tel:+17817719069"
                 >
-                  +41 22 715 7000
+                  +1 (781) 771 - 9069
                 </a>
               </div>
-              <div className="d-none d-xxl-inline-block box-dropdown-cart align-middle mr-10">
-                <Language />
-              </div>
-              <div className="box-button-login d-inline-block mr-10 align-middle">
-                <Link className="btn btn-default hover-up" to="/login">
-                  Log In
-                </Link>
-              </div>
-              <div className="box-button-login d-none2 d-inline-block align-middle">
-                <Link className="btn btn-white hover-up" to="/register">
-                  Sign Up
-                </Link>
-              </div>
-            </div> */}
+            </div>
           </div>
         </div>
       </div>
