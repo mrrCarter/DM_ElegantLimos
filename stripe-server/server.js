@@ -3,17 +3,17 @@
 require("dotenv").config(); // Load environment variables
 
 const express = require("express");
-const app = express();
+const path = require("path");
 const cors = require("cors");
 
-
+const app = express();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
-
-
 app.use(cors());
-app.use(express.static("."));
 app.use(express.json());
+
+// Serve static files from the dist directory
+app.use(express.static(path.join(__dirname, "dist")));
 
 app.post("/create-payment-intent", async (req, res) => {
   const { amount } = req.body;
@@ -38,4 +38,10 @@ app.post("/create-payment-intent", async (req, res) => {
   }
 });
 
-app.listen(4242, () => console.log("Node server listening on port 4242!"));
+// Serve the index.html file for any unknown routes
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
+
+const PORT = process.env.PORT || 4242;
+app.listen(PORT, () => console.log(`Node server listening on port ${PORT}!`));
