@@ -6,7 +6,13 @@ import PlacePicker from "@/components/common/PlacePicker";
 import DatePickerComponent from "@/components/common/DatePicker";
 import TimePickerComponent from "@/components/common/TimePicker";
 import { BookingContext } from "./BookingContext";
-import { FaUser, FaSuitcase } from "react-icons/fa";
+import { FaUser, FaSuitcase, FaClock, FaPlane } from "react-icons/fa";
+import Modal from "react-modal";
+import axios from "axios";
+import "../../styles/style.scss"; // Ensure the CSS file is imported
+
+// Set the app element for accessibility
+Modal.setAppElement("#root"); // Replace '#root' with your app's root element ID
 
 const containerStyle = {
   width: "100%",
@@ -42,11 +48,14 @@ function SideBar() {
     totalPrice,
     cardLast4Digits,
     currentStep,
+    tripType,
+    numberOfHours,
   } = bookingData;
 
   const [isEditing, setIsEditing] = useState(false);
   const [isMapsApiLoaded, setIsMapsApiLoaded] = useState(false);
-  // console.log("Phone number", passengerInfo?.phone);
+  const [isFlightModalOpen, setIsFlightModalOpen] = useState(false);
+  const [flightStatus, setFlightStatus] = useState(null);
 
   // Local state for editing
   const [localData, setLocalData] = useState({
@@ -56,6 +65,7 @@ function SideBar() {
     time: time ? new Date(time) : null,
     passengers: passengerInfo?.passengers || 1,
     luggage: passengerInfo?.luggage || 0,
+    tripType: tripType || "One Way", // Default trip type
   });
 
   // Check if Google Maps API is loaded
@@ -93,6 +103,7 @@ function SideBar() {
         time: time ? new Date(time) : null,
         passengers: passengerInfo?.passengers || 1,
         luggage: passengerInfo?.luggage || 0,
+        tripType: tripType || "One Way",
       });
     }
   };
@@ -111,6 +122,7 @@ function SideBar() {
         passengers: localData.passengers,
         luggage: localData.luggage,
       },
+      tripType: localData.tripType,
       directionsResponse: null, // Reset directions to trigger recalculation
       distanceText: null,
       durationText: null,
@@ -166,6 +178,54 @@ function SideBar() {
       [field]: value,
     }));
   };
+
+  // Commenting out flight status functionality
+  // const openFlightModal = () => {
+  //   fetchFlightStatus();
+  //   setIsFlightModalOpen(true);
+  // };
+
+  // const closeFlightModal = () => {
+  //   setIsFlightModalOpen(false);
+  // };
+
+  // const fetchFlightStatus = async () => {
+  //   try {
+  //     const apiKey = '9f84d58043edc166f92d84d25f33be73'; // Your API Key here
+
+  //     const response = await axios.get(`http://api.aviationstack.com/v1/flights`, {
+  //       params: {
+  //         access_key: apiKey,
+  //         flight_iata: passengerInfo.flightNumber,
+  //       },
+  //     });
+
+  //     if (response.data.error) {
+  //       console.error("API Error:", response.data.error);
+  //       setFlightStatus({ error: response.data.error.message });
+  //       return;
+  //     }
+
+  //     if (response.data && response.data.data && response.data.data.length > 0) {
+  //       const flightData = response.data.data[0];
+
+  //       setFlightStatus({
+  //         status: flightData.flight_status,
+  //         arrivalTime: flightData.arrival.estimated || flightData.arrival.scheduled,
+  //         date: flightData.arrival.estimated
+  //           ? new Date(flightData.arrival.estimated).toLocaleDateString()
+  //           : new Date(flightData.arrival.scheduled).toLocaleDateString(),
+  //         gateNumber: flightData.arrival.gate || "N/A",
+  //       });
+  //     } else {
+  //       console.log("No flight information available.");
+  //       setFlightStatus({ error: "Flight information not available." });
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching flight status:", error);
+  //     setFlightStatus({ error: "Unable to fetch flight status." });
+  //   }
+  // };
 
   if (!isMapsApiLoaded) {
     return <div>Loading Map...</div>;
@@ -263,6 +323,19 @@ function SideBar() {
                   ))}
                 </select>
               </div>
+              <div className="mb-3">
+                <label>Trip Type</label>
+                <select
+                  className="form-control"
+                  value={localData.tripType}
+                  onChange={(e) => handleInputChange("tripType")(e.target.value)}
+                >
+                  <option value="One Way">One Way</option>
+                  <option value="Round Trip">Round Trip</option>
+                  <option value="Hourly">Hourly</option>
+                  <option value="Airport Pickup">Airport Pickup</option>
+                </select>
+              </div>
               <button className="btn btn-primary" onClick={handleSave}>
                 Save
               </button>
@@ -285,34 +358,25 @@ function SideBar() {
                 </li>
               </ul>
 
-              <ul className="list-icons">
-                <li>
-                  <span className="icon-item icon-plan"> </span>
-                  <span className="info-location text-14-medium">
-                    {date
-                      ? new Date(date).toLocaleDateString([], {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })
-                      : "Date not specified."}
-                  </span>
-                </li>
-                <li>
-                  <span className="icon-item icon-time"></span>
-                  <span className="info-location text-14-medium">
-                    {time
-                      ? new Date(time).toLocaleTimeString([], {
-                          hour: "numeric",
-                          minute: "2-digit",
-                          hour12: true,
-                        })
-                      : "Time not specified."}
-                  </span>
-                </li>
-              </ul>
+              {/* Trip Type */}
+              <div className="trip-type-info mt-20">
+                <span className="text-14 color-grey">Trip Type:</span>
+                <span className="text-14-medium color-text">{tripType}</span>
+              </div>
 
-              {/* Display Passenger and Luggage Information */}
+              {/* Display additional trip type details */}
+              {tripType === "Hourly" && (
+                <div className="mt-2">
+                  <div className="d-flex align-items-center">
+                    <FaClock className="mr-2" />
+                    <span className="text-14-medium color-text">
+                      {numberOfHours} Hours
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Passenger and Luggage Information */}
               {passengerInfo && (
                 <div className="passenger-luggage-info mt-20">
                   <div className="d-flex justify-content-between">
@@ -395,6 +459,17 @@ function SideBar() {
                       ${parseFloat(price).toFixed(2)}
                     </span>
                   </div>
+                  {/* Car Seat Charge */}
+                  {passengerInfo.carSeatCount > 0 && (
+                    <div className="info-item">
+                      <span className="text-14 color-grey">
+                        Car Seats ({passengerInfo.carSeatCount} x $25):
+                      </span>
+                      <span className="text-14-medium color-text">
+                        ${passengerInfo.carSeatCount * 25}
+                      </span>
+                    </div>
+                  )}
                   {/* Display Gratuity and Total Price */}
                   {totalPrice && (
                     <>
@@ -443,6 +518,36 @@ function SideBar() {
           )}
         </div>
       </div>
+
+      {/* Flight Status Modal - Commented Out */}
+      {/* <Modal
+        isOpen={isFlightModalOpen}
+        onRequestClose={closeFlightModal}
+        contentLabel="Flight Status"
+        className="flight-modal"
+        overlayClassName="flight-modal-overlay"
+      >
+        <h2>Flight Status for {passengerInfo.flightNumber}</h2>
+        {flightStatus ? (
+          flightStatus.error ? (
+            <div className="flight-status-error">
+              <p>Error: {flightStatus.error}</p>
+            </div>
+          ) : (
+            <div className="flight-status-info">
+              <p>Status: {flightStatus.status}</p>
+              <p>Arrival Time: {flightStatus.arrivalTime}</p>
+              <p>Date: {flightStatus.date}</p>
+              <p>Gate Number: {flightStatus.gateNumber}</p>
+            </div>
+          )
+        ) : (
+          <p>Loading flight status...</p>
+        )}
+        <button className="btn btn-secondary" onClick={closeFlightModal}>
+          Close
+        </button>
+      </Modal> */}
     </div>
   );
 }

@@ -66,6 +66,7 @@ export default function Hero() {
 
   const [fromAddress, setFromAddress] = useState("");
   const [toAddress, setToAddress] = useState("");
+  const [tripType, setTripType] = useState("One Way"); // Default trip type
 
   // Validation states
   const [errors, setErrors] = useState({});
@@ -93,6 +94,7 @@ export default function Hero() {
         time: time.toISOString(),
         fromAddress,
         toAddress,
+        tripType, // Add trip type to booking data
       }));
 
       navigate("/booking");
@@ -170,7 +172,11 @@ export default function Hero() {
           </div>
           <div className="search-inputs">
             <label className="text-14 color-grey">From</label>
-            <PlacePicker value={fromAddress} onChange={setFromAddress} />
+            <PlacePicker
+              value={fromAddress}
+              onChange={setFromAddress}
+              style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc' }}
+            />
             {errors.fromAddress && (
               <span className="error-text">{errors.fromAddress}</span>
             )}
@@ -182,10 +188,30 @@ export default function Hero() {
           </div>
           <div className="search-inputs">
             <label className="text-14 color-grey">To</label>
-            <PlacePicker value={toAddress} onChange={setToAddress} />
+            <PlacePicker
+              value={toAddress}
+              onChange={setToAddress}
+              style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc' }}
+            />
             {errors.toAddress && (
               <span className="error-text">{errors.toAddress}</span>
             )}
+          </div>
+        </div>
+        <div className="search-item search-trip-type">
+          <div className="search-inputs">
+            <label className="text-14 color-grey">Trip Type</label>
+            <select
+              className="form-control"
+              style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+              value={tripType}
+              onChange={(e) => setTripType(e.target.value)}
+            >
+              <option value="One Way">One Way</option>
+              <option value="Round Trip">Round Trip</option>
+              <option value="Hourly">Hourly</option>
+              <option value="Airport Pickup">Airport Pickup</option>
+            </select>
           </div>
         </div>
         <div className="search-item search-button">

@@ -33,6 +33,8 @@ export default function BookingReceived() {
     cardLast4Digits,
     distanceText,
     durationText,
+    tripType,
+    numberOfHours,
   } = bookingData;
 
   const [directionsResponse, setDirectionsResponse] = useState(null);
@@ -49,7 +51,6 @@ export default function BookingReceived() {
   });
 
   useEffect(() => {
-    // removed the conditional check for bookingData
     // Calculate directions
     calculateRoute();
 
@@ -102,6 +103,10 @@ export default function BookingReceived() {
       duration: durationText,
       status: "Paid",
       card_last4: cardLast4Digits, // Added for reference
+      trip_type: tripType,
+      number_of_hours: numberOfHours,
+      flight_number: passengerInfo?.flightNumber,
+      car_seat_count: passengerInfo?.carSeatCount,
     };
 
     // Send email to client
@@ -147,6 +152,12 @@ export default function BookingReceived() {
       );
   };
 
+  // Calculate car seat charges
+  const carSeatCharge = (passengerInfo.carSeatCount || 0) * 25;
+
+  // Calculate gratuity amount
+  const gratuityAmount = (gratuityPercentage / 100) * parseFloat(price);
+
   return (
     <section className="section">
       <div className="container-sub">
@@ -174,7 +185,7 @@ export default function BookingReceived() {
                   <td>
                     <strong>Order Number:</strong>
                   </td>
-                  <td>#4039</td>
+                  <td>#{orderNumber}</td>
                 </tr>
                 <tr>
                   <td>
@@ -204,6 +215,28 @@ export default function BookingReceived() {
                 </tr>
                 <tr>
                   <td>
+                    <strong>Trip Type:</strong>
+                  </td>
+                  <td>{tripType}</td>
+                </tr>
+                {tripType === "Hourly" && (
+                  <tr>
+                    <td>
+                      <strong>Number of Hours:</strong>
+                    </td>
+                    <td>{numberOfHours}</td>
+                  </tr>
+                )}
+                {tripType === "Airport Pickup" && passengerInfo?.flightNumber && (
+                  <tr>
+                    <td>
+                      <strong>Flight Number:</strong>
+                    </td>
+                    <td>{passengerInfo.flightNumber}</td>
+                  </tr>
+                )}
+                <tr>
+                  <td>
                     <strong>Pick Up Address:</strong>
                   </td>
                   <td>{fromAddress}</td>
@@ -227,7 +260,7 @@ export default function BookingReceived() {
                     <strong>Pick Up Time:</strong>
                   </td>
                   <td>
-                    {time ? new Date(time).toLocaleTimeString() : ""}
+                    {time ? new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}
                   </td>
                 </tr>
                 <tr>
@@ -270,19 +303,21 @@ export default function BookingReceived() {
                   <td>Base Price:</td>
                   <td>${parseFloat(price).toFixed(2)}</td>
                 </tr>
+                {passengerInfo.carSeatCount > 0 && (
+                  <tr>
+                    <td>
+                      Car Seats ({passengerInfo.carSeatCount} x $25):
+                    </td>
+                    <td>${carSeatCharge.toFixed(2)}</td>
+                  </tr>
+                )}
                 <tr>
                   <td>Gratuity ({gratuityPercentage}%):</td>
-                  <td>
-                    $
-                    {(
-                      (gratuityPercentage / 100) *
-                      parseFloat(price)
-                    ).toFixed(2)}
-                  </td>
+                  <td>${gratuityAmount.toFixed(2)}</td>
                 </tr>
                 <tr className="font-weight-bold">
                   <td>Total Price:</td>
-                  <td>${totalPrice}</td>
+                  <td>${parseFloat(totalPrice).toFixed(2)}</td>
                 </tr>
               </tbody>
             </table>

@@ -66,3 +66,68 @@
     /* padding-top: 5px; 
     /* position: relative; top: -5px; */
   }
+
+  .flight-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    z-index: 1000;
+    max-width: 500px;
+    width: 90%;
+    border-radius: 8px;
+    outline: none;
+  }
+
+  .flight-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+  }
+
+  /* Style the input fields */
+  /* Ensure the parent container is positioned relatively */
+.search-item {
+  position: relative;
+}
+
+/* Style the suggestion dropdown */
+.search-item .pac-container {
+  width: 400px !important;
+  max-width: none !important;
+  left: 0 !important;
+  right: auto !important;
+  z-index: 10000 !important;
+  /* Additional styles for appearance */
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  font-size: 14px;
+}
+
+/* Adjust for mobile responsiveness */
+@media (max-width: 768px) {
+  .search-item .pac-container {
+    width: 100% !important;
+    left: 0 !important;
+    transform: none !important;
+  }
+}
+
+/* Style individual suggestion items */
+.pac-item {
+  padding: 10px; /* Add padding for better spacing */
+  border-bottom: 1px solid #eee; /* Divider between items */
+  background-color: #fff; /* Background color */
+}
+
+.pac-item:hover {
+  background-color: #f0f0f0; /* Hover effect */
+}

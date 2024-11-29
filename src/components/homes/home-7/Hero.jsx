@@ -1,8 +1,8 @@
 import { facts } from "@/data/facts";
 
 export default function Hero() {
-  return (
-    <section className="section banner-homepage6">
+  return (sdfgsfd
+    <section className="section banner-homepage6">sldfkjhsdf
       <div className="container-fluid">
         <div className="banner-homepage7">
           <div className="row align-items-center">
