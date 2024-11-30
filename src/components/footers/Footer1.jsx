@@ -146,7 +146,7 @@ export default function Footer1() {
             <div className="row align-items-center">
               <div className="col-lg-8 col-md-12 text-center text-lg-start">
                 <span className="text-14 color-white mr-50">
-                  © {new Date().getFullYear()} DM Elegant Limos. All Rights Re
+                  © {new Date().getFullYear()} DM Elegant Limo. All Rights Reserved
                 </span>
                 <ul className="menu-bottom">
                   {links1.map((elm, i) => (

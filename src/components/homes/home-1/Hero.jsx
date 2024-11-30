@@ -39,6 +39,7 @@ const banners = [
 export default function Hero() {
   const settings = {
     slidesPerView: 1,
+    slidesPerGroup: 1,
     loop: true,
     navigation: {
       nextEl: ".snbn2",

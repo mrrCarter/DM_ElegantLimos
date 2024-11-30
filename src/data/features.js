@@ -117,6 +117,7 @@ export const features6 = [
 ];
 
 export const features7 = [
+  "Our main focus is on safety and transparency",
   "100% Luxurious Fleet",
   "All Our Fleet Are Fully Valeted & Serviced",
   "A Safe & Secure Journey",

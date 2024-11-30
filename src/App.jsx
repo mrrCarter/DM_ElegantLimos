@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import "./styles/style.scss";
 import { Route, Routes, useLocation } from "react-router-dom";
-import Home from "./pages";
+import Home from "./pages/homes/home-1";
 import ScrollTopBehaviour from "./components/common/ScrollTopBehaviour";
 import ContactPage1 from "./pages/pages/contact";
 import PageNotFoundPage from "./pages/page-not-found";
@@ -14,6 +14,13 @@ import BookingPage from "./pages/booking-page";
 import WOW from "wow.js";
 import { BookingProvider } from "./components/booking/BookingContext";
 import WhatsAppFloatingButton from "./components/WhatsAppFloatingButton";
+import Services from "./pages/services/service-single";
+import Faq from './pages/FAQ';
+import AboutPage1 from "./pages/pages/about";
+import BlogListPage from "./pages/blogs/blog-single";
+// import OtherComponent from './components/homes/home-1/OtherComponent';
+
+
 
 function App() {
   const { pathname } = useLocation();
@@ -46,9 +53,15 @@ function App() {
             <Route path="invoice" element={<InvoicePage />} />
 
             <Route path="fleet-list" element={<FleetListPage1 />} />
+            <Route path="service-grid" element={<Services />} />
 
             {/* Update the parent route with trailing '*' to handle nested routes */}
             <Route path="booking/*" element={<BookingPage />} />
+
+            <Route path="faq" element={<Faq />} />
+            <Route path="about" element={<AboutPage1 />} />
+            <Route path="blog-list" element={<BlogListPage />} />
+            {/* <Route path="other" element={<OtherComponent />} /> */}
 
             {/* Wildcard route for 404 Not Found */}
             <Route path="*" element={<PageNotFoundPage />} />

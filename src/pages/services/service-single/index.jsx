@@ -11,9 +11,9 @@ import { useParams } from "react-router-dom";
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
   title:
-    "Service Single || Lixride Chauffeur Limousine Transport and Car Hire Reactjs Template",
+    "Service Single || DM Elegant Limo - Chauffeur Limousine Transport and Car Hire",
   description:
-    "Lixride Chauffeur Limousine Transport and Car Hire Reactjs Template",
+    "DM Elegant Limo - Chauffeur Limousine Transport and Car Hire",
 };
 export default function ServiceSinglePage() {
   let params = useParams();
@@ -26,9 +26,9 @@ export default function ServiceSinglePage() {
       <Header1 /> <MobailHeader1 />
       <main className="main">
         <Breadcumb service={service} />
-        <SearchBox service={service} />
-        <Features1 />
+        {/* <SearchBox service={service} /> */}
         <Features2 />
+        <Features1 />
       </main>
       <Footer1 />
     </>

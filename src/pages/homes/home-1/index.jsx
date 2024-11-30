@@ -30,17 +30,17 @@ export default function HomePage1() {
       <MobailHeader1 />
       <main className="main">
         <Hero />
-        <Partners />
-        <Feet />
+        {/* <Partners /> */}
+        {/* <Feet /> */}
         <Process />
         <Features />
-        <Facts />
-        <Service />
-        <Testimonials />
-        <Cta />
+        {/* <Facts /> */}
+        {/* <Service /> */}
+        {/* <Testimonials /> */}
+        {/* <Cta />
         <Blogs />
         <Faq />
-        <DownloadApp />
+        <DownloadApp /> */}
       </main>
       <Footer1 />
     </>

@@ -5,13 +5,13 @@ import Header1 from "@/components/headers/Header1";
 import MobailHeader1 from "@/components/headers/MobailHeader1";
 import { allBlogs } from "@/data/blogs";
 import { useParams } from "react-router-dom";
-
+import ComingSoon from "@/components/ComingSoon";
 import MetaComponent from "@/components/common/MetaComponent";
 const metadata = {
   title:
-    "Blog Single || Lixride Chauffeur Limousine Transport and Car Hire Reactjs Template",
+    "Blog Single || DM Elegant Limo - Chauffeur Limousine Transport and Car Hire",
   description:
-    "Lixride Chauffeur Limousine Transport and Car Hire Reactjs Template",
+    "DM Elegant Limo - Chauffeur Limousine Transport and Car Hire",
 };
 export default function BlogsSinglePage() {
   let params = useParams();
@@ -22,8 +22,9 @@ export default function BlogsSinglePage() {
       <MetaComponent meta={metadata} />
       <Header1 /> <MobailHeader1 />
       <main className="main">
-        <BlogSingle blog={blog} />
-        <RelatedBlogs />
+        {/* <BlogSingle blog={blog} /> */}
+        {/* <RelatedBlogs /> */}
+        <ComingSoon />  
       </main>
       <Footer1 />
     </>

@@ -24,9 +24,9 @@ export default function FeetList1() {
       <div className="container-sub">
         <div className="row align-items-center">
           <div className="col-lg-6 col-md-6 col-sm-6 text-center text-sm-start mb-30">
-            <h2 className="heading-24-medium wow fadeInUp">
-              Choose Your Fleet
-            </h2>
+            <h5 className="heading-24-medium wow fadeInUp">
+              We offer a wide range of vehicles for your transportation needs.
+            </h5>
           </div>
           <div className="col-lg-6 col-md-6 col-sm-6 text-center text-sm-end mb-30 wow fadeInUp">
             <div className="dropdown dropdown-menu-box">
@@ -121,11 +121,11 @@ export default function FeetList1() {
           ))}
           {!selectedCars.length && <div>No item found. Try another filter</div>}
         </div>
-        <div className="text-center mt-40 mb-120">
+        {/* <div className="text-center mt-40 mb-120">
           <nav className="box-pagination">
             <Pagination />
           </nav>
-        </div>
+        </div> */}
       </div>
     </section>
   );

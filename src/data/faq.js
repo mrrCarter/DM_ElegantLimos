@@ -1,43 +1,23 @@
 export const faqs = [
   {
     id: 1,
-    question: `How do I create an account?`,
-    answer: `Sad ipscing elitrsed diamnonu myeir mod, sadipscing elitrsed
-                    dia morem ipsum dolor situamet consetetur loutrytru hury.
-                    Lorem ipsum dolor sitametco nsetetur sa cingelitrse diamonu
-                    eirmoid, sad ipscing elitrstrud diamtre ute riyutroui tout.`,
+    question: `Is smoking allowed in the vehicle?`,
+    answer: `No, smoking is not allowed in the vehicle.`,
   },
   {
     id: 2,
-    question: `How do I earn Easy Ride Rewards points?`,
-    answer: `Sad ipscing elitrsed diamnonu myeir mod, sadipscing elitrsed
-                    dia morem ipsum dolor situamet consetetur loutrytru hury.
-                    Lorem ipsum dolor sitametco nsetetur sa cingelitrse diamonu
-                    eirmoid, sad ipscing elitrstrud diamtre ute riyutroui tout.`,
+    question: `Do I need to call to confirm my booking?`,
+    answer: `No, you can confirm your booking by sending a message to our WhatsApp number. But once the reservation is confirmed, you will receive a confirmation email or call from our team to let you know that your booking is confirmed and the next steps.`,
   },
   {
     id: 3,
-    question: `How can I add my credit card on the app for payments?`,
-    answer: `Sad ipscing elitrsed diamnonu myeir mod, sadipscing elitrsed
-                    dia morem ipsum dolor situamet consetetur loutrytru hury.
-                    Lorem ipsum dolor sitametco nsetetur sa cingelitrse diamonu
-                    eirmoid, sad ipscing elitrstrud diamtre ute riyutroui tout.`,
+    question: `Do you provide child seats?`,
+    answer: `Yes, we provide child seats. Available on request.`,
   },
   {
     id: 4,
-    question: `How do I become a Captain?`,
-    answer: `Sad ipscing elitrsed diamnonu myeir mod, sadipscing elitrsed
-                    dia morem ipsum dolor situamet consetetur loutrytru hury.
-                    Lorem ipsum dolor sitametco nsetetur sa cingelitrse diamonu
-                    eirmoid, sad ipscing elitrstrud diamtre ute riyutroui tout.`,
-  },
-  {
-    id: 5,
     question: `Where can I get more information, support or make a claim?`,
-    answer: `Sad ipscing elitrsed diamnonu myeir mod, sadipscing elitrsed
-                    dia morem ipsum dolor situamet consetetur loutrytru hury.
-                    Lorem ipsum dolor sitametco nsetetur sa cingelitrse diamonu
-                    eirmoid, sad ipscing elitrstrud diamtre ute riyutroui tout.`,
+    answer: `Please contact us via WhatsApp or email. You can easily find the WhatsApp button on the bottom right of the page.`,
   },
 ];
 export const faqs2 = [

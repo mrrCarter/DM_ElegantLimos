@@ -3,7 +3,7 @@ import { reviews, socials, tags } from "@/data/blogs";
 
 import { useState } from "react";
 
-export default function BlogSingle({ blog }) {
+export default function BlogSingle({ blog = {} }) {
   const [fullName, setFullName] = useState("Test");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -30,7 +30,9 @@ export default function BlogSingle({ blog }) {
             />
           </div>
         </div>
-        <h2 className="heading-44-medium mb-30 wow fadeInUp">{blog.title}</h2>
+        <h2 className="heading-44-medium mb-30 wow fadeInUp">
+          {blog.title || "Default Title"}
+        </h2>
         <div className="content-single wow fadeInUp">
           <p>
             Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam

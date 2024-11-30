@@ -4,17 +4,19 @@ import Header1 from "@/components/headers/Header1";
 import MobailHeader1 from "@/components/headers/MobailHeader1";
 
 import MetaComponent from "@/components/common/MetaComponent";
+import BreadCumb from "@/components/fleet-list/BreadCumb";
 const metadata = {
   title:
-    "Fleet List || Lixride Chauffeur Limousine Transport and Car Hire Reactjs Template",
+    "Fleet List || DM Elegant Limo - Chauffeur Limousine Transport and Car Hire",
   description:
-    "Lixride Chauffeur Limousine Transport and Car Hire Reactjs Template",
+    "DM Elegant Limo - Chauffeur Limousine Transport and Car Hire",
 };
 export default function FleetListPage1() {
   return (
     <>
       <MetaComponent meta={metadata} />
       <Header1 /> <MobailHeader1 />
+      <BreadCumb />
       <main className="main">
         <FeetList1 />
       </main>
