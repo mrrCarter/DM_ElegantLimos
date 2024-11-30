@@ -28,7 +28,7 @@ export default function FeetList1() {
               We offer a wide range of vehicles for your transportation needs.
             </h5>
           </div>
-          <div className="col-lg-6 col-md-6 col-sm-6 text-center text-sm-end mb-30 wow fadeInUp">
+          {/* <div className="col-lg-6 col-md-6 col-sm-6 text-center text-sm-end mb-30 wow fadeInUp">
             <div className="dropdown dropdown-menu-box">
               <a
                 className="dropdown-toggle"
@@ -83,7 +83,7 @@ export default function FeetList1() {
                 ))}
               </ul>
             </div>
-          </div>
+          </div> */}
         </div>
         <div className="row mt-30">
           {selectedCars.slice(0, 6).map((elm, i) => (
