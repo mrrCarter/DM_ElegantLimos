@@ -86,9 +86,9 @@ export default function BookingVehicles({ onNext }) {
                 </p>
                 <div className="vehicle-passenger-luggage mb-10">
                   <span className="passenger">
-                    Passengers {elm.passenger}
+                     {elm.passenger}
                   </span>
-                  <span className="luggage">Luggage {elm.luggage}</span>
+                  <span className="luggage">{elm.luggage}</span>
                 </div>
                 <div className="vehicle-price mb-10">
                   {bookingData.distanceValue &&
