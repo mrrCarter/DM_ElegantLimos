@@ -16,14 +16,30 @@ export default function ContactForm() {
 
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.fullname) newErrors.fullname = "Full name is required.";
+    if (!formData.email) {
+      newErrors.email = "Email is required.";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Email address is invalid.";
+    }
+    if (!formData.subject) newErrors.subject = "Subject is required.";
+    if (!formData.message) newErrors.message = "Message is required.";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
     setLoading(true);
 
     const templateParams = {
@@ -77,9 +93,9 @@ export default function ContactForm() {
               <form onSubmit={handleSubmit}>
                 <div className="row">
                   <div className="col-lg-6 col-md-6">
-                      <label className="form-label" htmlFor="fullname">
-                        Full Name
-                      </label>
+                    <label className="form-label" htmlFor="fullname">
+                      Full Name
+                    </label>
                     <div className="form-group">
                       <input
                         className="form-control"
@@ -88,26 +104,28 @@ export default function ContactForm() {
                         value={formData.fullname}
                         onChange={handleChange}
                       />
+                      {errors.fullname && <p className="text-danger">{errors.fullname}</p>}
                     </div>
                   </div>
                   <div className="col-lg-6 col-md-6">
-                      <label className="form-label" htmlFor="email">
-                        Email
-                      </label>
+                    <label className="form-label" htmlFor="email">
+                      Email
+                    </label>
                     <div className="form-group">
                       <input
                         className="form-control"
                         id="email"
-                        type="text"
+                        type="email"
                         value={formData.email}
                         onChange={handleChange}
                       />
+                      {errors.email && <p className="text-danger">{errors.email}</p>}
                     </div>
                   </div>
                   <div className="col-lg-12">
-                      <label className="form-label" htmlFor="subject">
-                        Subject
-                      </label>
+                    <label className="form-label" htmlFor="subject">
+                      Subject
+                    </label>
                     <div className="form-group">
                       <input
                         className="form-control"
@@ -116,12 +134,13 @@ export default function ContactForm() {
                         value={formData.subject}
                         onChange={handleChange}
                       />
+                      {errors.subject && <p className="text-danger">{errors.subject}</p>}
                     </div>
                   </div>
                   <div className="col-lg-12">
-                      <label className="form-label" htmlFor="message">
-                        Message
-                      </label>
+                    <label className="form-label" htmlFor="message">
+                      Message
+                    </label>
                     <div className="form-group">
                       <textarea
                         className="form-control"
@@ -129,6 +148,7 @@ export default function ContactForm() {
                         value={formData.message}
                         onChange={handleChange}
                       ></textarea>
+                      {errors.message && <p className="text-danger">{errors.message}</p>}
                     </div>
                   </div>
                   <div className="col-lg-12">

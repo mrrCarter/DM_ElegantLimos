@@ -34,7 +34,7 @@ export default function BookingVehicles({ onNext }) {
     setBookingData((prev) => ({
       ...prev,
       vehicle,
-      baseFare: price,
+      price,
     }));
 
     onNext(); // Move to the next step
@@ -94,7 +94,7 @@ export default function BookingVehicles({ onNext }) {
                   {bookingData.distanceValue &&
                   bookingData.durationValue ? (
                     <>
-                      <span className="price-label">Price:</span>
+                      <span className="price-label">Price: </span> 
                       <span className="price-value">
                         ${calculatePrice(elm.title)}
                       </span>

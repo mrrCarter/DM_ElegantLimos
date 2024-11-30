@@ -10,7 +10,7 @@ export default function Features2() {
           </h2>
           <div className="content-single wow fadeInUp">
             <p>
-              Experience the finest luxury chauffeur services in Boston. Whether you're traveling for business or leisure, we offer a range of services to meet your needs. Our professional drivers ensure a safe and comfortable journey, with fixed prices and exceptional service.
+              Experience the finest luxury chauffeur services in Boston and the surrounding areas. Whether you're traveling for business or leisure, we offer a range of services to meet your needs. Our professional drivers ensure a safe and comfortable journey, with fixed prices and exceptional service.
             </p>
             <p>
               Our services include:

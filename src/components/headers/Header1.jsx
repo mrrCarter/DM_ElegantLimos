@@ -1,13 +1,18 @@
 import { useEffect, useState } from "react";
 import Nav from "./components/Nav";
 import { Link } from "react-router-dom";
+import Language from "./components/Language";
 
 export default function Header1() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 200);
+      if (window.scrollY > 200) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -19,50 +24,45 @@ export default function Header1() {
   }, []);
 
   return (
-    <header
-      className={`header sticky-bar ${scrolled ? "stick" : ""}`}
-      style={{ backgroundColor: "#000" }}
-    >
+    <header className={`header sticky-bar ${scrolled ? "stick" : ""}`}>
       <div className="container">
         <div className="main-header">
-          {/* Header Left: Logo and Navigation */}
           <div className="header-left">
-            {/* Logo */}
             <div className="header-logo">
               <Link className="d-flex" to="/">
                 <img
                   alt="DmElegantLimos"
                   src="assets/dm_logo_2_processed.jpg"
                   style={{
-                    width: "150px",
-                    height: "auto",
-                    transition: "width 0.3s ease",
+                    width: window.innerWidth <= 768 ? "150px" : "150px", // Smaller size for mobile
+                    height: "auto", // Maintain aspect ratio
+                    transition: "width 0.3s ease", // Smooth transition for resizing
                   }}
                 />
               </Link>
             </div>
-            {/* Navigation */}
             <div className="header-nav">
-              <nav className="nav-main-menu d-none d-lg-block">
+              <nav className="nav-main-menu d-none d-xl-block">
                 <ul className="main-menu">
                   <Nav />
                 </ul>
               </nav>
-              <div className="burger-icon burger-icon-white d-lg-none">
+              <div className="burger-icon burger-icon-white"
+              style={{top:"60px"}}>
                 <span className="burger-icon-mid"></span>
                 <span className="burger-icon-bottom"></span>
               </div>
             </div>
-          </div>
-
-          {/* Header Right: Phone Number */}
-          <div className="header-right">
-            <a
-              className="text-14-medium call-phone color-white hover-up d-inline"
-              href="tel:+17817719069"
-            >
-              +1 (781) 771 - 9069
-            </a>
+            <div className="header-right">
+              <div className="align-middle mr-10">
+                <a
+                  className="text-14-medium call-phone color-white hover-up d-inline"
+                  href="tel:+17817719069"
+                >
+                  +1 (781) 771 - 9069
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>

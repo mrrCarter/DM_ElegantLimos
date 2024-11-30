@@ -23,8 +23,9 @@ export const BookingProvider = ({ children }) => {
       flightNumber: "",
     },
     vehicle: null,
-    baseFare: null,
-    basePrice: null,
+    price: null,
+    basePrice: 0,
+    gratuityAmount: 0,
     numberOfHours: 3,
     distanceValue: null,
     durationValue: null,
@@ -32,53 +33,45 @@ export const BookingProvider = ({ children }) => {
     selectedExtras: null,
     cardLast4Digits: null,
     gratuityPercentage: 20,
-    gratuityAmount: null,
-    carSeatCharge: null,
-    totalPrice: null,
+    totalPrice: 0,
     currentStep: 1,
   });
 
   useEffect(() => {
     calculateTotalPrice();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    bookingData.baseFare,
+    bookingData.price,
     bookingData.gratuityPercentage,
     bookingData.tripType,
     bookingData.numberOfHours,
     bookingData.passengerInfo.carSeatCount,
     bookingData.vehicle,
+    bookingData.passengerInfo,
   ]);
 
   const calculateTotalPrice = () => {
-    let basePrice = 0;
-
-    if (bookingData.vehicle) {
-      if (bookingData.tripType === "Hourly") {
-        const hourlyRate =
-          bookingData.vehicle.type === "SUV" ? 115 : 105;
-        const numberOfHours = Math.max(bookingData.numberOfHours || 0, 3);
-        basePrice = hourlyRate * numberOfHours;
-      } else {
-        basePrice = parseFloat(bookingData.baseFare) || 0;
-      }
+    let basePrice = parseFloat(bookingData.price) || 0;
+  
+    if (bookingData.tripType === "Hourly" && bookingData.vehicle) {
+      const hourlyRate =
+        bookingData.vehicle.title === "SUV Class" ? 120 : 95;
+      basePrice = hourlyRate * bookingData.numberOfHours;
     }
-
+  
     const carSeatCharge = (bookingData.passengerInfo.carSeatCount || 0) * 25;
-
-    const subtotal = basePrice + carSeatCharge;
-
+    basePrice += carSeatCharge;
+  
     const gratuityPercent = bookingData.gratuityPercentage || 0;
-    const gratuityAmount = (gratuityPercent / 100) * subtotal;
-
-    const total = subtotal + gratuityAmount;
-
+    const gratuityAmount = (gratuityPercent / 100) * basePrice;
+    const total = basePrice + gratuityAmount;
+  
     setBookingData((prev) => ({
       ...prev,
-      basePrice: basePrice.toFixed(2),
+      totalPrice: total.toFixed(2),
+      price: basePrice.toFixed(2),
+      basePrice: basePrice.toFixed(2), // Store base price separately
       carSeatCharge: carSeatCharge.toFixed(2),
       gratuityAmount: gratuityAmount.toFixed(2),
-      totalPrice: total.toFixed(2),
     }));
   };
 

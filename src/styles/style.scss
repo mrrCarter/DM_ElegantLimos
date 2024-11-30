@@ -55,10 +55,11 @@
   }
 
   @media (max-width: 768px) {
-    // .header {
-    //   padding: 20px 20px; /* Increase padding on mobile to make the header taller */
-    //   // margin-top: 20px; /* Move the header down on mobile */
-    // }
+    .header {
+      padding: 20px 20px; /* Increase padding on mobile to make the header taller */
+      margin-top: 20px; /* Move the header down on mobile */
+      
+    }
 
     .header-logo img {
       width: 180px; /* Increase the logo size on mobile */
@@ -104,6 +105,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-end; /* Push phone number to the far right */
+    
   }
 
   .call-phone {
@@ -216,9 +218,6 @@
   margin-top: auto; /* Push the footer to the bottom */
 }
 
-.form-group {
-  position: relative; /* Ensure the dropdown is positioned correctly */
-}
 
 .form-control {
   width: 100%; /* Ensure the input takes full width */
@@ -240,4 +239,32 @@ select.form-control {
   line-height: 1.5; /* Ensure enough line height */
   height: auto; /* Allow height to adjust based on content */
   box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
+
+@media (max-width: 1200px) {
+  .header.main-menu a {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 991px) {
+  .header.main-menu a {
+    font-size: 12px;
+  }
+}
+.header .main-menu li {
+  margin: 0 5px;
+}
+
+.header .main-menu li a {
+  font-family: "DM Sans", sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 12px;
+  color: #fff;
+  line-height: 24px;
+  display: inline;
+  padding: 5px 6px 1px ;
+  text-decoration: none;
+  position: relative;
 }

@@ -18,14 +18,31 @@ export default function RequestQuoteForm() {
 
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.fullname) newErrors.fullname = "Full name is required.";
+    if (!formData.email) {
+      newErrors.email = "Email is required.";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Email address is invalid.";
+    }
+    if (!formData.phone) newErrors.phone = "Phone number is required.";
+    if (!formData.serviceType) newErrors.serviceType = "Service type is required.";
+    if (!formData.date) newErrors.date = "Date is required.";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
     setLoading(true);
 
     const templateParams = {
@@ -92,6 +109,7 @@ export default function RequestQuoteForm() {
                         value={formData.fullname}
                         onChange={handleChange}
                       />
+                      {errors.fullname && <p className="text-danger">{errors.fullname}</p>}
                     </div>
                   </div>
                   <div className="col-lg-6 col-md-6">
@@ -106,6 +124,7 @@ export default function RequestQuoteForm() {
                         value={formData.email}
                         onChange={handleChange}
                       />
+                      {errors.email && <p className="text-danger">{errors.email}</p>}
                     </div>
                   </div>
                   <div className="col-lg-6 col-md-6">
@@ -120,6 +139,7 @@ export default function RequestQuoteForm() {
                         value={formData.phone}
                         onChange={handleChange}
                       />
+                      {errors.phone && <p className="text-danger">{errors.phone}</p>}
                     </div>
                   </div>
                   <div className="col-lg-6 col-md-6">
@@ -140,6 +160,7 @@ export default function RequestQuoteForm() {
                         <option value="Corporate">Corporate</option>
                         <option value="Special Events">Special Events</option>
                       </select>
+                      {errors.serviceType && <p className="text-danger">{errors.serviceType}</p>}
                     </div>
                   </div>
                   <div className="col-lg-6 col-md-6">
@@ -154,6 +175,7 @@ export default function RequestQuoteForm() {
                         value={formData.date}
                         onChange={handleChange}
                       />
+                      {errors.date && <p className="text-danger">{errors.date}</p>}
                     </div>
                   </div>
                   <div className="col-lg-12">

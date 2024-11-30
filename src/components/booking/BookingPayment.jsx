@@ -62,13 +62,14 @@ function CheckoutForm({ onNext, onBack }) {
   useEffect(() => {
     const basePrice = parseFloat(bookingData.price) || 0;
     const gratuityPercent = gratuityPercentage || 0;
-
+  
     const gratuityAmount = (gratuityPercent / 100) * basePrice;
-    const total = basePrice + gratuityAmount;
-
+    const total = basePrice + gratuityAmount + parseFloat(bookingData.carSeatCharge);
+  
     setBookingData((prev) => ({
       ...prev,
       totalPrice: total.toFixed(2),
+      gratuityPercentage: gratuityPercent,
     }));
   }, [bookingData.price, gratuityPercentage, setBookingData]);
 
