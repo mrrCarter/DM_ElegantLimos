@@ -109,15 +109,16 @@
   }
 
   .call-phone {
-    display: inline-block;
+    color: #fff;
+    text-decoration: none;
+    font-size: 16px;
     padding: 10px 20px;
     border: 2px solid rgba(255, 255, 255, 0.5);
     border-radius: 25px;
-    color: #fff;
-    text-decoration: none;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
     background-color: rgba(255, 255, 255, 0.1);
-    margin-left: 20px; /* Space between nav and phone number */
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    white-space: nowrap; /* Prevent text from wrapping */
+    box-sizing: border-box; /* Include padding and border in the element's total width */
   }
 
   .call-phone:hover {
@@ -125,9 +126,10 @@
     border-color: rgba(255, 255, 255, 0.8);
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 500px) {
     .call-phone {
-      margin-left: -15px; /* Adjust this value as needed */
+      font-size: 14px; /* Reduce font size for smaller screens */
+      padding: 8px 15px; /* Adjust padding to fit the content */
     }
   }
 
