@@ -25,7 +25,7 @@ export default function ServiceSinglePage() {
       <MetaComponent meta={metadata} />
       <Header1 /> <MobailHeader1 />
       <main className="main">
-        <Breadcumb service={service} />
+        {/* <Breadcumb service={service} /> */}
         {/* <SearchBox service={service} /> */}
         <Features2 />
         <Features1 />

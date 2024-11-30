@@ -445,7 +445,7 @@ function SideBar() {
               </div>
 
               {/* Display Vehicle and Price */}
-              {vehicle && price && (
+              {vehicle && (
                 <div className="vehicle-price-info mt-20">
                   <div className="info-item">
                     <span className="text-14 color-grey">Vehicle: </span>
@@ -456,42 +456,35 @@ function SideBar() {
                   <div className="info-item">
                     <span className="text-14 color-grey">Base Price: </span>
                     <span className="text-14-medium color-text">
-                      ${parseFloat(price).toFixed(2)}
+                      ${bookingData.basePrice}
                     </span>
                   </div>
                   {/* Car Seat Charge */}
-                  {passengerInfo.carSeatCount > 0 && (
+                  {bookingData.carSeatCharge > 0 && (
                     <div className="info-item">
                       <span className="text-14 color-grey">
                         Car Seats ({passengerInfo.carSeatCount} x $25):
                       </span>
                       <span className="text-14-medium color-text">
-                        ${passengerInfo.carSeatCount * 25}
+                        ${bookingData.carSeatCharge}
                       </span>
                     </div>
                   )}
-                  {/* Display Gratuity and Total Price */}
-                  {totalPrice && (
-                    <>
-                      <div className="info-item">
-                        <span className="text-14 color-grey">
-                          Gratuity ({gratuityPercentage}%):{" "}
-                        </span>
-                        <span className="text-14-medium color-text">
-                          $
-                          {(
-                            (gratuityPercentage / 100) * parseFloat(price)
-                          ).toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="info-item">
-                        <span className="text-14 color-grey">Total Price: </span>
-                        <span className="text-14-medium color-text">
-                          ${parseFloat(totalPrice).toFixed(2)}
-                        </span>
-                      </div>
-                    </>
-                  )}
+                  {/* Gratuity and Total Price */}
+                  <div className="info-item">
+                    <span className="text-14 color-grey">
+                      Gratuity ({gratuityPercentage}%):
+                    </span>
+                    <span className="text-14-medium color-text">
+                      ${bookingData.gratuityAmount}
+                    </span>
+                  </div>
+                  <div className="info-item">
+                    <span className="text-14 color-grey">Total Price: </span>
+                    <span className="text-14-medium color-text">
+                      ${bookingData.totalPrice}
+                    </span>
+                  </div>
                 </div>
               )}
 

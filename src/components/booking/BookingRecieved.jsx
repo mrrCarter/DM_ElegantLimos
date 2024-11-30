@@ -301,23 +301,23 @@ export default function BookingReceived() {
               <tbody>
                 <tr>
                   <td>Base Price:</td>
-                  <td>${parseFloat(price).toFixed(2)}</td>
+                  <td>${bookingData.basePrice}</td>
                 </tr>
                 {passengerInfo.carSeatCount > 0 && (
                   <tr>
                     <td>
                       Car Seats ({passengerInfo.carSeatCount} x $25):
                     </td>
-                    <td>${carSeatCharge.toFixed(2)}</td>
+                    <td>${bookingData.carSeatCharge}</td>
                   </tr>
                 )}
                 <tr>
                   <td>Gratuity ({gratuityPercentage}%):</td>
-                  <td>${gratuityAmount.toFixed(2)}</td>
+                  <td>${bookingData.gratuityAmount}</td>
                 </tr>
                 <tr className="font-weight-bold">
                   <td>Total Price:</td>
-                  <td>${parseFloat(totalPrice).toFixed(2)}</td>
+                  <td>${bookingData.totalPrice}</td>
                 </tr>
               </tbody>
             </table>

@@ -31,18 +31,24 @@ export const menuItems = [
   },
   {
     id: 6,
+    title: "Request a Quote",
+    link: "/request-a-quote", // Direct link to Quote page
+    subMenu: [], // No submenu
+  },
+  {
+    id: 7,
     title: "Blog",
     link: "/blog-list", // Direct link to Blog List
     subMenu: [], // No submenu
   },
   {
-    id: 7,
+    id: 8,
     title: "FAQ",
     link: "/faq", // Direct link to FAQ page
     subMenu: [], // No submenu
   },
   {
-    id: 8,
+    id: 9,
     title: "Contact",
     link: "/contact", // Direct link to Contact page
     subMenu: [], // No submenu

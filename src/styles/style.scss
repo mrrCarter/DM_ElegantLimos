@@ -46,14 +46,83 @@
     background-color: #128c7e;
   }
 
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px; /* Add some padding for spacing */
+    background-color: #000; /* Set background color to solid black */
+  }
+
+  @media (max-width: 768px) {
+    // .header {
+    //   padding: 20px 20px; /* Increase padding on mobile to make the header taller */
+    //   // margin-top: 20px; /* Move the header down on mobile */
+    // }
+
+    .header-logo img {
+      width: 180px; /* Increase the logo size on mobile */
+    }
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    flex-grow: 1; /* Allow the left section to grow */
+  }
+
+  .header-logo {
+    margin-right: 20px; /* Space between logo and nav */
+  }
+
+  .header-nav {
+    display: flex;
+    flex-grow: 1; /* Allow the nav to grow and fill space */
+    justify-content: center; /* Center the nav items */
+  }
+
+  .main-menu {
+    display: flex; /* Use flexbox to align items inline */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .main-menu li {
+    margin: 0 15px; /* Space between menu items */
+    display: flex; /* Ensure list items are inline */
+    align-items: center; /* Vertically center the text */
+  }
+
+  .main-menu a {
+    text-decoration: none;
+    color: inherit; /* Ensure the link color matches the text */
+    display: inline-block; /* Ensure links are inline */
+  }
+
   .header-right {
     display: flex;
     align-items: center;
+    justify-content: flex-end; /* Push phone number to the far right */
   }
-  
+
   .call-phone {
-    white-space: nowrap; /* Prevents the text from wrapping */
+    display: inline-block;
+    padding: 10px 20px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 25px;
+    color: #fff;
+    text-decoration: none;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.1);
+    margin-left: 20px; /* Space between nav and phone number */
   }
+
+  .call-phone:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.8);
+  }
+
   @media (max-width: 768px) {
     .call-phone {
       margin-left: -15px; /* Adjust this value as needed */
@@ -130,4 +199,45 @@
 
 .pac-item:hover {
   background-color: #f0f0f0; /* Hover effect */
+}
+
+/* Assuming your main container has a class of 'page-container' */
+.page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ensure the container takes the full height of the viewport */
+}
+
+.content {
+  flex: 1; /* Allow the content to grow and fill the space */
+}
+
+.footer {
+  margin-top: auto; /* Push the footer to the bottom */
+}
+
+.form-group {
+  position: relative; /* Ensure the dropdown is positioned correctly */
+}
+
+.form-control {
+  width: 100%; /* Ensure the input takes full width */
+  max-width: 100%; /* Prevent overflow */
+  overflow: visible; /* Ensure text is not clipped */
+  white-space: nowrap; /* Prevent text from wrapping */
+  padding: 0.5rem; /* Add padding for better spacing */
+  line-height: 1.5; /* Ensure enough line height */
+  height: auto; /* Allow height to adjust based on content */
+  box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
+
+select.form-control {
+  width: 100%; /* Ensure the dropdown takes full width */
+  max-width: 100%; /* Prevent overflow */
+  overflow: visible; /* Ensure text is not clipped */
+  white-space: nowrap; /* Prevent text from wrapping */
+  padding: 0.5rem; /* Add padding for better spacing */
+  line-height: 1.5; /* Ensure enough line height */
+  height: auto; /* Allow height to adjust based on content */
+  box-sizing: border-box; /* Include padding and border in element's total width and height */
 }

@@ -48,7 +48,7 @@ export const cars = [
     imgSrc: "/assets/imgs/luxurySedans.webp",
     title: "Luxury Class",
     description: "Mercedes-Benz E-Class, BMW 5 Series, Cadillac XTS or similar",
-    passenger: 1,
+    passenger: 3,
     luggage: 3,
     price: 1400,
     carType: "Sedan",

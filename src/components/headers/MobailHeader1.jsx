@@ -28,7 +28,7 @@ export default function MobailHeader1() {
   return (
     <div
       className="mobile-header-active mobile-header-wrapper-style perfect-scrollbar"
-      style={{ top: "80px" }} // Move the menu down by 60px
+      style={{ top: "60px" }} // Move the menu down by 60px
     >
       <div className="mobile-header-wrapper-inner">
         <div className="mobile-header-content-area">

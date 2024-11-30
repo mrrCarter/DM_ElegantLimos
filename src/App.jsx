@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import "./styles/style.scss";
 import { Route, Routes, useLocation } from "react-router-dom";
-import Home from "./pages/homes/home-1";
+import Home from "./pages";
 import ScrollTopBehaviour from "./components/common/ScrollTopBehaviour";
 import ContactPage1 from "./pages/pages/contact";
 import PageNotFoundPage from "./pages/page-not-found";
@@ -18,9 +18,7 @@ import Services from "./pages/services/service-single";
 import Faq from './pages/FAQ';
 import AboutPage1 from "./pages/pages/about";
 import BlogListPage from "./pages/blogs/blog-single";
-// import OtherComponent from './components/homes/home-1/OtherComponent';
-
-
+import RequestQuotePage from "./pages/pages/requestQuote";
 
 function App() {
   const { pathname } = useLocation();
@@ -46,27 +44,19 @@ function App() {
       <Routes>
         <Route path="/">
           <Route index element={<Home />} />
-
-
-            <Route path="contact" element={<ContactPage1 />} />
-            <Route path="booking-receved" element={<BookingRecevedPage />} />
-            <Route path="invoice" element={<InvoicePage />} />
-
-            <Route path="fleet-list" element={<FleetListPage1 />} />
-            <Route path="service-grid" element={<Services />} />
-
-            {/* Update the parent route with trailing '*' to handle nested routes */}
-            <Route path="booking/*" element={<BookingPage />} />
-
-            <Route path="faq" element={<Faq />} />
-            <Route path="about" element={<AboutPage1 />} />
-            <Route path="blog-list" element={<BlogListPage />} />
-            {/* <Route path="other" element={<OtherComponent />} /> */}
-
-            {/* Wildcard route for 404 Not Found */}
-            <Route path="*" element={<PageNotFoundPage />} />
-          </Route>
-        </Routes>
+          <Route path="contact" element={<ContactPage1 />} />
+          <Route path="booking-receved" element={<BookingRecevedPage />} />
+          <Route path="invoice" element={<InvoicePage />} />
+          <Route path="fleet-list" element={<FleetListPage1 />} />
+          <Route path="service-grid" element={<Services />} />
+          <Route path="booking/*" element={<BookingPage />} />
+          <Route path="faq" element={<Faq />} />
+          <Route path="about" element={<AboutPage1 />} />
+          <Route path="blog-list" element={<BlogListPage />} />
+          <Route path="request-a-quote" element={<RequestQuotePage />} />
+          <Route path="*" element={<PageNotFoundPage />} />
+        </Route>
+      </Routes>
       <ScrollTopBehaviour />
     </BookingProvider>
   );

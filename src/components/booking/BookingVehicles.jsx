@@ -15,7 +15,7 @@ export default function BookingVehicles({ onNext }) {
       ? bookingData.durationValue / 60
       : 0;
 
-    const minimumFare = 75;
+    const minimumFare = vehicleType === "Luxury Class" ? 95 : 120;
     const baseRatePerMile = vehicleType === "Luxury Class" ? 3.75 : 4.5;
     const baseRatePerMinute = 1.5;
 
@@ -34,7 +34,7 @@ export default function BookingVehicles({ onNext }) {
     setBookingData((prev) => ({
       ...prev,
       vehicle,
-      price,
+      baseFare: price,
     }));
 
     onNext(); // Move to the next step

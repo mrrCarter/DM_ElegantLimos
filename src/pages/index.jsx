@@ -30,10 +30,10 @@ export default function Home() {
       <Header1 /> <MobailHeader1 />
       <main className="main">
         <Hero />
-        <Feet />
+        {/* <Feet /> */}
         <Process />
         <Features />
-        <Facts />
+        {/* <Facts /> */}
 
       </main>
       <Footer1 />

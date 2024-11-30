@@ -25,7 +25,7 @@ export default function AboutPage1() {
       <MetaComponent meta={metadata} />
       <Header1 /> <MobailHeader1 />
       <main className="main">
-        <Breadcumb />
+        {/* <Breadcumb /> */}
         <Banner />
         <Features />
         {/* <Facts />
