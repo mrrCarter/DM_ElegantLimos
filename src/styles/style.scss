@@ -134,10 +134,9 @@
   }
 
   .header .burger-icon  {
-    margin-top: -2px; /* Adjust this value as needed */
-    /* Alternatively, you can use padding or position */
-    /* padding-top: 5px; 
-    /* position: relative; top: -5px; */
+    position: relative;
+    top: 20px;
+    right: -190px;
   }
 
   .flight-modal {
@@ -269,4 +268,13 @@ select.form-control {
   padding: 5px 6px 1px ;
   text-decoration: none;
   position: relative;
+}
+
+.header .burger-icon {
+  position: relative;
+  top: 20px;
+  right: -190px;
+  /* Alternatively, use transform for more precise control */
+  transform: translateY(-55px); 
+
 }
