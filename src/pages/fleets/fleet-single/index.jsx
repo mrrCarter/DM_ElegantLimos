@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import BreadCumb from "@/components/fleet-list/BreadCumb";
 import BookSection from "@/components/fleet-single/BookSection";
 import BusnessClassFleet from "@/components/fleet-single/BusnessClassFleet";

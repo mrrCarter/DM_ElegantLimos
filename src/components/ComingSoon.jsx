@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 // import Countdown from "react-countdown";
 // const Completionist = () => <span>Comming Soon!</span>;
 

@@ -2,7 +2,7 @@ import DatePickerComponent from "@/components/common/DatePicker";
 import PlacePicker from "@/components/common/PlacePicker";
 import TimePickerComponent from "@/components/common/TimePicker";
 
-export default function SearchBox({ service }) {
+export default function SearchBox({ service: _service }) {
   return (
     <section className="section">
       <div className="banner-image-service wow fadeInUp"></div>

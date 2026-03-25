@@ -1,26 +1,32 @@
 {
-  "name": "luxride-react",
+  "name": "dm-elegant-limos",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "vite",
+    "dev:server": "node stripe-server/server.mjs",
     "build": "vite build",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint . --ext js,jsx,mjs,cjs --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "start": "node stripe-server/server.js",
+    "start": "node stripe-server/server.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "postinstall": "npm run build"
   },
   "dependencies": {
     "@react-google-maps/api": "^2.20.3",
     "@stripe/react-stripe-js": "^2.8.1",
     "@stripe/stripe-js": "^4.9.0",
-    "axios": "^1.7.8",
+    "axios": "^1.13.6",
     "bootstrap": "^5.0.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "emailjs-com": "^3.2.0",
-    "express": "^4.21.1",
+    "express": "^5.2.1",
     "react": "^18.2.0",
     "react-countdown": "^2.3.5",
     "react-date-object": "^2.1.9",
@@ -31,7 +37,7 @@
     "react-modal": "^3.16.1",
     "react-modal-video": "^2.0.1",
     "react-multi-date-picker": "^4.5.2",
-    "react-router-dom": "^6.27.0",
+    "react-router-dom": "^6.30.2",
     "react-select": "^5.8.3",
     "react-slick": "^0.30.2",
     "react-time-picker": "^7.0.0",
@@ -39,10 +45,12 @@
     "sass": "^1.75.0",
     "slick": "^1.12.2",
     "stripe": "^17.3.1",
-    "swiper": "^11.1.1",
+    "swiper": "^12.1.3",
     "wow.js": "^1.2.2"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.7.0",
+    "@testing-library/react": "^16.3.0",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@vitejs/plugin-react-swc": "^3.5.0",
@@ -50,6 +58,9 @@
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
-    "vite": "^5.4.11"
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "jsdom": "^26.1.0",
+    "vite": "^5.4.21",
+    "vitest": "^2.1.9"
   }
 }

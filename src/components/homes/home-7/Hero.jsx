@@ -1,8 +1,6 @@
-import { facts } from "@/data/facts";
-
 export default function Hero() {
-  return (sdfgsfd
-    <section className="section banner-homepage6">sldfkjhsdf
+  return (
+    <section className="section banner-homepage6">
       <div className="container-fluid">
         <div className="banner-homepage7">
           <div className="row align-items-center">

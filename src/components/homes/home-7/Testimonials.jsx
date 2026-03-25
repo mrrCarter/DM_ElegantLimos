@@ -1,6 +1,6 @@
 import { testimonials5 } from "@/data/testimonials";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
