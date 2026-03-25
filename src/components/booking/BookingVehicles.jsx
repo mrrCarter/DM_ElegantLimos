@@ -1,31 +1,19 @@
 // BookingVehicles.jsx
 
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { cars } from "@/data/cars";
 import { BookingContext } from "./BookingContext";
+import { calculateTripFare } from "@/lib/booking";
 
 export default function BookingVehicles({ onNext }) {
   const { bookingData, setBookingData } = useContext(BookingContext);
 
   const calculatePrice = (vehicleType) => {
-    const distanceInMiles = bookingData.distanceValue
-      ? bookingData.distanceValue / 1609.34
-      : 0;
-    const durationInMinutes = bookingData.durationValue
-      ? bookingData.durationValue / 60
-      : 0;
-
-    const minimumFare = vehicleType === "Luxury Class" ? 95 : 120;
-    const baseRatePerMile = vehicleType === "Luxury Class" ? 3.75 : 4.5;
-    const baseRatePerMinute = 1.5;
-
-    const fare = Math.max(
-      minimumFare,
-      distanceInMiles * baseRatePerMile +
-        durationInMinutes * baseRatePerMinute
-    );
-
-    return fare.toFixed(2);
+    return calculateTripFare({
+      vehicleTitle: vehicleType,
+      distanceValue: bookingData.distanceValue,
+      durationValue: bookingData.durationValue,
+    });
   };
 
   const handleSelectVehicle = (vehicle) => {
@@ -91,17 +79,10 @@ export default function BookingVehicles({ onNext }) {
                   <span className="luggage">{elm.luggage}</span>
                 </div>
                 <div className="vehicle-price mb-10">
-                  {bookingData.distanceValue &&
-                  bookingData.durationValue ? (
-                    <>
-                      <span className="price-label">Price: </span> 
-                      <span className="price-value">
-                        ${calculatePrice(elm.title)}
-                      </span>
-                    </>
-                  ) : (
-                    <span>Calculating price...</span>
-                  )}
+                  <>
+                    <span className="price-label">Starting at: </span>
+                    <span className="price-value">${calculatePrice(elm.title)}</span>
+                  </>
                 </div>
                 <button
                   className="btn btn-primary w-100"

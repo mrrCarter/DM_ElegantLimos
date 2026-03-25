@@ -1,6 +1,5 @@
 // BookingTab.jsx
 
-import React from "react";
 
 const tabs = [
   {
@@ -31,7 +30,7 @@ export default function BookingTab({ currentStep, setCurrentStep, highestStep })
   };
 
   return (
-    <div className="box-booking-tabs">
+    <div className="box-booking-tabs premium-booking-tabs">
       {tabs.map((elm) => (
         <div key={elm.id} className="item-tab wow fadeInUp">
           <div

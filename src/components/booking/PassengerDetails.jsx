@@ -1,7 +1,8 @@
 // PassengerDetails.jsx
 
-import React, { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect } from "react";
 import { BookingContext } from "./BookingContext";
+import { TRIP_TYPES } from "@/lib/booking";
 
 export default function PassengerDetails({ onNext, onBack }) {
   const { bookingData, setBookingData } = useContext(BookingContext);
@@ -38,9 +39,25 @@ export default function PassengerDetails({ onNext, onBack }) {
     }
   }, [bookingData.vehicle]);
 
+  useEffect(() => {
+    setPassengerInfo((prev) => ({
+      ...prev,
+      carSeatCount: Math.min(
+        Number.parseInt(prev.carSeatCount, 10) || 0,
+        maxCarSeats
+      ),
+    }));
+  }, [maxCarSeats]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setPassengerInfo((prev) => ({ ...prev, [name]: value }));
+    setPassengerInfo((prev) => ({
+      ...prev,
+      [name]:
+        name === "passengers" || name === "luggage" || name === "carSeatCount"
+          ? Number.parseInt(value, 10)
+          : value,
+    }));
   };
 
   const handleTripTypeChange = (e) => {
@@ -75,9 +92,11 @@ export default function PassengerDetails({ onNext, onBack }) {
           value={tripType}
           onChange={handleTripTypeChange}
         >
-          <option value="Point-to-Point">Point-to-Point</option>
-          <option value="Hourly">Hourly</option>
-          <option value="Airport Pickup">Airport Pickup</option>
+          {TRIP_TYPES.map((type) => (
+            <option key={type} value={type}>
+              {type}
+            </option>
+          ))}
         </select>
       </div>
 
