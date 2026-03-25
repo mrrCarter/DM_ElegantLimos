@@ -1,6 +1,5 @@
 // TimePickerComponent.jsx
 
-import React from "react";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 import TimePickerPlugin from "react-multi-date-picker/plugins/time_picker";
 
@@ -18,7 +17,7 @@ export default function TimePickerComponent({ value, onChange }) {
       format="hh:mm A"
       value={value ? new DateObject(value) : null}
       onChange={handleTimeChange}
-      plugins={[<TimePickerPlugin position="bottom" />]}
+      plugins={[<TimePickerPlugin key="time-picker" position="bottom" />]}
       disableDayPicker
       placeholder="Select time"
       style={{

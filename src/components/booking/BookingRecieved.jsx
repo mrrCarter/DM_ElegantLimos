@@ -1,12 +1,9 @@
-// BookingReceived.jsx
-
-import React, { useEffect, useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { BookingContext } from "./BookingContext";
 import emailjs from "emailjs-com";
 import { GoogleMap, DirectionsRenderer } from "@react-google-maps/api";
-import { useNavigate } from "react-router-dom";
+import { isEmailJsConfigured } from "@/lib/runtimeConfig";
 
-// Environment Variables
 const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
 const TEMPLATE_ID_CLIENT = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_CLIENT;
 const TEMPLATE_ID_COMPANY = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_COMPANY;
@@ -18,8 +15,7 @@ const containerStyle = {
 };
 
 export default function BookingReceived() {
-  const { bookingData } = useContext(BookingContext);
-  const navigate = useNavigate();
+  const { bookingData, setBookingData } = useContext(BookingContext);
   const {
     fromAddress,
     toAddress,
@@ -35,68 +31,80 @@ export default function BookingReceived() {
     durationText,
     tripType,
     numberOfHours,
+    orderNumber: storedOrderNumber,
+    paymentIntentId,
   } = bookingData;
 
-  const [directionsResponse, setDirectionsResponse] = useState(null);
+  const [directionsResponse, setDirectionsResponse] = useState(
+    bookingData.directionsResponse || null
+  );
+  const [emailStatus, setEmailStatus] = useState(
+    isEmailJsConfigured(import.meta.env) ? "idle" : "unconfigured"
+  );
+  const [orderNumber] = useState(() => {
+    if (storedOrderNumber) {
+      return storedOrderNumber;
+    }
 
-  // Generate a new order number each time the component is accessed
-  const [orderNumber, setOrderNumber] = useState(() => {
-    // Retrieve the last order number from localStorage
-    const lastOrderNumber = parseInt(localStorage.getItem("lastOrderNumber"), 10) || 999;
-    const newOrderNumber = lastOrderNumber + 1;
-    // Store the new order number in localStorage
-    localStorage.setItem("lastOrderNumber", newOrderNumber);
-    console.log(`Generated new order number: ${newOrderNumber}`); // Debugging line
-    return newOrderNumber.toString();
+    const lastOrderNumber =
+      Number.parseInt(window.localStorage.getItem("lastOrderNumber"), 10) || 999;
+    const nextOrderNumber = String(lastOrderNumber + 1);
+    window.localStorage.setItem("lastOrderNumber", nextOrderNumber);
+    return nextOrderNumber;
   });
 
   useEffect(() => {
-    // Calculate directions
-    calculateRoute();
+    if (!storedOrderNumber) {
+      setBookingData((prev) => ({
+        ...prev,
+        orderNumber,
+      }));
+    }
+  }, [orderNumber, setBookingData, storedOrderNumber]);
 
-    // Send emails
-    sendEmails();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const calculateRoute = async () => {
-    if (!window.google || !window.google.maps) {
-      console.error("Google Maps API is not loaded yet.");
+  useEffect(() => {
+    if (!window.google?.maps || !fromAddress || !toAddress) {
       return;
     }
 
     const directionsService = new window.google.maps.DirectionsService();
-
     directionsService.route(
       {
-        origin: bookingData.fromAddress,
-        destination: bookingData.toAddress,
+        origin: fromAddress,
+        destination: toAddress,
         travelMode: window.google.maps.TravelMode.DRIVING,
       },
       (result, status) => {
         if (status === "OK") {
           setDirectionsResponse(result);
-        } else {
-          console.error(`Error fetching directions ${status}`);
+          return;
         }
+
+        console.error(`Error fetching directions ${status}`);
       }
     );
-  };
+  }, [fromAddress, toAddress]);
 
-  const sendEmails = () => {
+  const sendEmails = useCallback(async () => {
     const templateParams = {
       to_email: passengerInfo?.email || "info@dmelegantlimos.com",
-      order_number: `#${orderNumber}`, // Use the generated order number
+      order_number: `#${orderNumber}`,
       fromAddress,
       toAddress,
       date: date ? new Date(date).toLocaleDateString() : "",
-      time: time ? new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "",
+      time: time
+        ? new Date(time).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })
+        : "",
       first_name: passengerInfo?.firstName || "",
       last_name: passengerInfo?.lastName || "",
       email: passengerInfo?.email || "",
       phone: passengerInfo?.phone || "",
       vehicle: vehicle?.title || "",
-      base_price: parseFloat(price).toFixed(2),
+      base_price: bookingData.basePrice,
+      subtotal: price,
       gratuity_percentage: gratuityPercentage,
       total_price: totalPrice,
       distance: distanceText,
@@ -109,54 +117,82 @@ export default function BookingReceived() {
       car_seat_count: passengerInfo?.carSeatCount,
     };
 
-    // Send email to client
-    emailjs
-      .send(
-        SERVICE_ID,
-        TEMPLATE_ID_CLIENT,
-        templateParams,
-        PUBLIC_KEY
-      )
-      .then(
-        (response) => {
-          console.log(
-            "Email sent to client successfully!",
-            response.status,
-            response.text
-          );
-        },
-        (error) => {
-          console.error("Failed to send email to client:", error);
-        }
-      );
-
-    // Send email to company
-    emailjs
-      .send(
+    const results = await Promise.allSettled([
+      emailjs.send(SERVICE_ID, TEMPLATE_ID_CLIENT, templateParams, PUBLIC_KEY),
+      emailjs.send(
         SERVICE_ID,
         TEMPLATE_ID_COMPANY,
         { ...templateParams, to_email: "info@dmelegantlimo.com" },
         PUBLIC_KEY
-      )
-      .then(
-        (response) => {
-          console.log(
-            "Email sent to company successfully!",
-            response.status,
-            response.text
-          );
-        },
-        (error) => {
-          console.error("Failed to send email to company:", error);
+      ),
+    ]);
+
+    const failedResults = results.filter((result) => result.status === "rejected");
+    if (failedResults.length > 0) {
+      throw failedResults[0].reason ?? new Error("Booking confirmation email failed.");
+    }
+  }, [
+    bookingData.basePrice,
+    cardLast4Digits,
+    date,
+    distanceText,
+    durationText,
+    fromAddress,
+    gratuityPercentage,
+    numberOfHours,
+    orderNumber,
+    passengerInfo?.carSeatCount,
+    passengerInfo?.email,
+    passengerInfo?.firstName,
+    passengerInfo?.flightNumber,
+    passengerInfo?.lastName,
+    passengerInfo?.phone,
+    price,
+    time,
+    toAddress,
+    totalPrice,
+    tripType,
+    vehicle?.title,
+  ]);
+
+  useEffect(() => {
+    if (!isEmailJsConfigured(import.meta.env) || !passengerInfo?.email) {
+      return;
+    }
+
+    const receiptStorageKey = paymentIntentId
+      ? `booking-confirmation:${paymentIntentId}`
+      : `booking-confirmation:${orderNumber}`;
+
+    if (window.localStorage.getItem(receiptStorageKey) === "sent") {
+      setEmailStatus("sent");
+      return;
+    }
+
+    let cancelled = false;
+
+    const run = async () => {
+      try {
+        await sendEmails();
+        if (cancelled) {
+          return;
         }
-      );
-  };
+        window.localStorage.setItem(receiptStorageKey, "sent");
+        setEmailStatus("sent");
+      } catch (error) {
+        console.error("Failed to send booking confirmation emails:", error);
+        if (!cancelled) {
+          setEmailStatus("failed");
+        }
+      }
+    };
 
-  // Calculate car seat charges
-  const carSeatCharge = (passengerInfo.carSeatCount || 0) * 25;
+    run();
 
-  // Calculate gratuity amount
-  const gratuityAmount = (gratuityPercentage / 100) * parseFloat(price);
+    return () => {
+      cancelled = true;
+    };
+  }, [orderNumber, passengerInfo?.email, paymentIntentId, sendEmails]);
 
   return (
     <section className="section">
@@ -172,10 +208,22 @@ export default function BookingReceived() {
               {passengerInfo?.firstName}, your booking was submitted successfully!
             </h4>
             <p className="text-14 color-grey mb-40">
-              Booking details have been sent to: {passengerInfo?.email}, and
-              a representative will be in touch with you momentarily.
+              {emailStatus === "sent"
+                ? `Booking details have been sent to ${passengerInfo?.email}.`
+                : "Your trip details are confirmed and a representative will be in touch shortly."}
             </p>
           </div>
+          {emailStatus === "unconfigured" && (
+            <div className="alert alert-warning mb-20">
+              Confirmation email templates are not configured yet in this
+              environment.
+            </div>
+          )}
+          {emailStatus === "failed" && (
+            <div className="alert alert-warning mb-20">
+              The booking is confirmed, but email delivery needs to be retried.
+            </div>
+          )}
           {/* Display Booking Details */}
           <div className="booking-details">
             <h5 className="mb-20">Booking Invoice</h5>
@@ -260,7 +308,12 @@ export default function BookingReceived() {
                     <strong>Pick Up Time:</strong>
                   </td>
                   <td>
-                    {time ? new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}
+                    {time
+                      ? new Date(time).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : ""}
                   </td>
                 </tr>
                 <tr>

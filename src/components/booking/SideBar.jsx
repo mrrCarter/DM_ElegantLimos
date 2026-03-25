@@ -1,18 +1,11 @@
-// SideBar.jsx
-
-import React, { useState, useEffect, useContext } from "react";
+import { memo, useCallback, useContext, useEffect, useState } from "react";
 import { GoogleMap, DirectionsRenderer } from "@react-google-maps/api";
 import PlacePicker from "@/components/common/PlacePicker";
 import DatePickerComponent from "@/components/common/DatePicker";
 import TimePickerComponent from "@/components/common/TimePicker";
 import { BookingContext } from "./BookingContext";
-import { FaUser, FaSuitcase, FaClock, FaPlane } from "react-icons/fa";
-import Modal from "react-modal";
-import axios from "axios";
+import { FaUser, FaSuitcase, FaClock } from "react-icons/fa";
 import "../../styles/style.scss"; // Ensure the CSS file is imported
-
-// Set the app element for accessibility
-Modal.setAppElement("#root"); // Replace '#root' with your app's root element ID
 
 const containerStyle = {
   width: "100%",
@@ -43,21 +36,17 @@ function SideBar() {
     durationText,
     passengerInfo,
     vehicle,
-    price,
     gratuityPercentage,
-    totalPrice,
     cardLast4Digits,
-    currentStep,
     tripType,
     numberOfHours,
   } = bookingData;
 
   const [isEditing, setIsEditing] = useState(false);
-  const [isMapsApiLoaded, setIsMapsApiLoaded] = useState(false);
-  const [isFlightModalOpen, setIsFlightModalOpen] = useState(false);
-  const [flightStatus, setFlightStatus] = useState(null);
+  const [isMapsApiLoaded, setIsMapsApiLoaded] = useState(
+    Boolean(window.google && window.google.maps)
+  );
 
-  // Local state for editing
   const [localData, setLocalData] = useState({
     fromAddress: fromAddress || "",
     toAddress: toAddress || "",
@@ -65,36 +54,71 @@ function SideBar() {
     time: time ? new Date(time) : null,
     passengers: passengerInfo?.passengers || 1,
     luggage: passengerInfo?.luggage || 0,
-    tripType: tripType || "One Way", // Default trip type
+    tripType: tripType || "Point-to-Point",
   });
 
-  // Check if Google Maps API is loaded
   useEffect(() => {
     if (window.google && window.google.maps) {
       setIsMapsApiLoaded(true);
-    } else {
-      const interval = setInterval(() => {
-        if (window.google && window.google.maps) {
-          setIsMapsApiLoaded(true);
-          clearInterval(interval);
-        }
-      }, 100);
-      return () => clearInterval(interval);
+      return undefined;
     }
+
+    const interval = setInterval(() => {
+      if (window.google && window.google.maps) {
+        setIsMapsApiLoaded(true);
+        clearInterval(interval);
+      }
+    }, 100);
+
+    return () => clearInterval(interval);
   }, []);
 
-  // Calculate route when addresses change
+  const calculateRoute = useCallback(
+    (origin, destination) => {
+      if (!window.google?.maps || !origin || !destination) {
+        return;
+      }
+
+      const directionsService = new window.google.maps.DirectionsService();
+
+      directionsService.route(
+        {
+          origin,
+          destination,
+          travelMode: window.google.maps.TravelMode.DRIVING,
+        },
+        (result, status) => {
+          if (status === "OK") {
+            const route = result.routes[0];
+            const leg = route.legs[0];
+
+            setBookingData((prev) => ({
+              ...prev,
+              directionsResponse: result,
+              distanceText: leg.distance.text,
+              durationText: leg.duration.text,
+              distanceValue: leg.distance.value,
+              durationValue: leg.duration.value,
+            }));
+            return;
+          }
+
+          console.error(`Error fetching directions ${status}`);
+        }
+      );
+    },
+    [setBookingData]
+  );
+
   useEffect(() => {
     if (isMapsApiLoaded && fromAddress && toAddress) {
       calculateRoute(fromAddress, toAddress);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isMapsApiLoaded, fromAddress, toAddress]);
+  }, [calculateRoute, fromAddress, isMapsApiLoaded, toAddress]);
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
 
-    // Reset local data when entering edit mode
     if (!isEditing) {
       setLocalData({
         fromAddress: fromAddress || "",
@@ -103,7 +127,7 @@ function SideBar() {
         time: time ? new Date(time) : null,
         passengers: passengerInfo?.passengers || 1,
         luggage: passengerInfo?.luggage || 0,
-        tripType: tripType || "One Way",
+        tripType: tripType || "Point-to-Point",
       });
     }
   };
@@ -133,45 +157,6 @@ function SideBar() {
     }
   };
 
-  const calculateRoute = (origin, destination) => {
-    if (!isMapsApiLoaded) {
-      console.error("Google Maps API is not loaded yet.");
-      return;
-    }
-
-    if (origin === "" || destination === "") {
-      console.error("Origin or destination is empty.");
-      return;
-    }
-
-    const directionsService = new window.google.maps.DirectionsService();
-
-    directionsService.route(
-      {
-        origin,
-        destination,
-        travelMode: window.google.maps.TravelMode.DRIVING,
-      },
-      (result, status) => {
-        if (status === "OK") {
-          const route = result.routes[0];
-          const leg = route.legs[0];
-
-          setBookingData((prev) => ({
-            ...prev,
-            directionsResponse: result,
-            distanceText: leg.distance.text,
-            durationText: leg.duration.text,
-            distanceValue: leg.distance.value,
-            durationValue: leg.duration.value,
-          }));
-        } else {
-          console.error(`Error fetching directions ${status}`);
-        }
-      }
-    );
-  };
-
   const handleInputChange = (field) => (value) => {
     setLocalData((prev) => ({
       ...prev,
@@ -179,61 +164,9 @@ function SideBar() {
     }));
   };
 
-  // Commenting out flight status functionality
-  // const openFlightModal = () => {
-  //   fetchFlightStatus();
-  //   setIsFlightModalOpen(true);
-  // };
-
-  // const closeFlightModal = () => {
-  //   setIsFlightModalOpen(false);
-  // };
-
-  // const fetchFlightStatus = async () => {
-  //   try {
-  //     const apiKey = '9f84d58043edc166f92d84d25f33be73'; // Your API Key here
-
-  //     const response = await axios.get(`http://api.aviationstack.com/v1/flights`, {
-  //       params: {
-  //         access_key: apiKey,
-  //         flight_iata: passengerInfo.flightNumber,
-  //       },
-  //     });
-
-  //     if (response.data.error) {
-  //       console.error("API Error:", response.data.error);
-  //       setFlightStatus({ error: response.data.error.message });
-  //       return;
-  //     }
-
-  //     if (response.data && response.data.data && response.data.data.length > 0) {
-  //       const flightData = response.data.data[0];
-
-  //       setFlightStatus({
-  //         status: flightData.flight_status,
-  //         arrivalTime: flightData.arrival.estimated || flightData.arrival.scheduled,
-  //         date: flightData.arrival.estimated
-  //           ? new Date(flightData.arrival.estimated).toLocaleDateString()
-  //           : new Date(flightData.arrival.scheduled).toLocaleDateString(),
-  //         gateNumber: flightData.arrival.gate || "N/A",
-  //       });
-  //     } else {
-  //       console.log("No flight information available.");
-  //       setFlightStatus({ error: "Flight information not available." });
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching flight status:", error);
-  //     setFlightStatus({ error: "Unable to fetch flight status." });
-  //   }
-  // };
-
-  if (!isMapsApiLoaded) {
-    return <div>Loading Map...</div>;
-  }
-
   return (
-    <div className="box-tab-right">
-      <div className="sidebar">
+    <div className="box-tab-right booking-shell__sidebar">
+      <div className="sidebar premium-booking-sidebar">
         <div className="d-flex align-items-center justify-content-between">
           <h6 className="text-20-medium color-text">Ride Summary</h6>
           <button
@@ -330,7 +263,7 @@ function SideBar() {
                   value={localData.tripType}
                   onChange={(e) => handleInputChange("tripType")(e.target.value)}
                 >
-                  <option value="One Way">One Way</option>
+                  <option value="Point-to-Point">Point-to-Point</option>
                   <option value="Round Trip">Round Trip</option>
                   <option value="Hourly">Hourly</option>
                   <option value="Airport Pickup">Airport Pickup</option>
@@ -409,7 +342,7 @@ function SideBar() {
                 </div>
               )}
 
-              {directionsResponse && (
+              {directionsResponse && isMapsApiLoaded && (
                 <div className="mt-20">
                   <GoogleMap
                     mapContainerStyle={containerStyle}
@@ -433,13 +366,19 @@ function SideBar() {
                 <div className="info-route-left">
                   <span className="text-14 color-grey">Total Distance</span>
                   <span className="text-14-medium color-text">
-                    {distanceText || "Calculating..."}
+                    {distanceText ||
+                      (fromAddress && toAddress && isMapsApiLoaded
+                        ? "Calculating..."
+                        : "Not available yet")}
                   </span>
                 </div>
                 <div className="info-route-left">
                   <span className="text-14 color-grey">Total Time</span>
                   <span className="text-14-medium color-text">
-                    {durationText || "Calculating..."}
+                    {durationText ||
+                      (fromAddress && toAddress && isMapsApiLoaded
+                        ? "Calculating..."
+                        : "Not available yet")}
                   </span>
                 </div>
               </div>
@@ -511,38 +450,8 @@ function SideBar() {
           )}
         </div>
       </div>
-
-      {/* Flight Status Modal - Commented Out */}
-      {/* <Modal
-        isOpen={isFlightModalOpen}
-        onRequestClose={closeFlightModal}
-        contentLabel="Flight Status"
-        className="flight-modal"
-        overlayClassName="flight-modal-overlay"
-      >
-        <h2>Flight Status for {passengerInfo.flightNumber}</h2>
-        {flightStatus ? (
-          flightStatus.error ? (
-            <div className="flight-status-error">
-              <p>Error: {flightStatus.error}</p>
-            </div>
-          ) : (
-            <div className="flight-status-info">
-              <p>Status: {flightStatus.status}</p>
-              <p>Arrival Time: {flightStatus.arrivalTime}</p>
-              <p>Date: {flightStatus.date}</p>
-              <p>Gate Number: {flightStatus.gateNumber}</p>
-            </div>
-          )
-        ) : (
-          <p>Loading flight status...</p>
-        )}
-        <button className="btn btn-secondary" onClick={closeFlightModal}>
-          Close
-        </button>
-      </Modal> */}
     </div>
   );
 }
 
-export default React.memo(SideBar);
+export default memo(SideBar);

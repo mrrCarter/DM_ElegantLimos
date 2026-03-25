@@ -1,11 +1,18 @@
 // PlacePicker.jsx
 
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { Autocomplete } from "@react-google-maps/api";
 import axios from "axios";
 
-export default function PlacePicker({ label, value, onChange }) {
+export default function PlacePicker({ label, value, onChange, inputStyle }) {
   const [autocomplete, setAutocomplete] = useState(null);
+  const [inputValue, setInputValue] = useState(value ?? "");
+  const hasGoogleMaps =
+    typeof window !== "undefined" && Boolean(window.google?.maps?.places);
+
+  useEffect(() => {
+    setInputValue(value ?? "");
+  }, [value]);
 
   const onLoad = (autocompleteInstance) => {
     setAutocomplete(autocompleteInstance);
@@ -15,6 +22,7 @@ export default function PlacePicker({ label, value, onChange }) {
     if (autocomplete !== null) {
       const place = autocomplete.getPlace();
       const formattedAddress = place.formatted_address || place.name;
+      setInputValue(formattedAddress ?? "");
       if (onChange) onChange(formattedAddress);
     } else {
       console.log("Autocomplete is not loaded yet!");
@@ -32,7 +40,10 @@ export default function PlacePicker({ label, value, onChange }) {
               `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}`
             );
             const address = response.data.results[0]?.formatted_address;
-            if (address && onChange) onChange(address);
+            if (address) {
+              setInputValue(address);
+              if (onChange) onChange(address);
+            }
           } catch (error) {
             console.error("Error fetching address from coordinates:", error);
           }
@@ -49,30 +60,59 @@ export default function PlacePicker({ label, value, onChange }) {
 
   return (
     <div>
-        <div>
-          <button
-            type="button"
-            onClick={handleCurrentLocationClick}
-            style={{
-              textDecoration: "underline",
-              color: "purple",
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              padding: "5px 0",
-              fontSize: "12px",
-              whiteSpace: "nowrap",
+      <div>
+        <button
+          type="button"
+          onClick={handleCurrentLocationClick}
+          style={{
+            textDecoration: "underline",
+            color: "var(--premium-accent)",
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: "5px 0",
+            fontSize: "12px",
+            whiteSpace: "nowrap",
+          }}
+        >
+          Use Current Location
+        </button>
+      </div>
+      {hasGoogleMaps ? (
+        <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
+          <input
+            type="text"
+            className="form-control"
+            placeholder={label || "Enter a location"}
+            value={inputValue}
+            onChange={(event) => {
+              const nextValue = event.target.value;
+              setInputValue(nextValue);
+              if (onChange) onChange(nextValue);
             }}
-          >
-            Use Current Location
-          </button>
-        </div>
-      <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
+            style={{
+              width: "100%",
+              border: "none",
+              borderBottom: "1px solid #ccc",
+              fontSize: "18px",
+              padding: "10px 0",
+              color: "#000",
+              backgroundColor: "transparent",
+              ...inputStyle,
+            }}
+          />
+        </Autocomplete>
+      ) : (
         <input
           type="text"
           className="form-control"
           placeholder={label || "Enter a location"}
-          defaultValue={value}
+          value={inputValue}
+          onChange={(event) => {
+            const nextValue = event.target.value;
+            setInputValue(nextValue);
+            if (onChange) onChange(nextValue);
+          }}
           style={{
             width: "100%",
             border: "none",
@@ -81,9 +121,10 @@ export default function PlacePicker({ label, value, onChange }) {
             padding: "10px 0",
             color: "#000",
             backgroundColor: "transparent",
+            ...inputStyle,
           }}
         />
-      </Autocomplete>
+      )}
     </div>
   );
 }
