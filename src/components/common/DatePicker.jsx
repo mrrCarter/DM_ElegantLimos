@@ -1,6 +1,5 @@
 // DatePickerComponent.jsx
 
-import React from "react";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 
 export default function DatePickerComponent({ value, onChange }) {

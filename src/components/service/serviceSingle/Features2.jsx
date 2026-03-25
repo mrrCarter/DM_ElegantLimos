@@ -1,4 +1,3 @@
-import { features7 } from "@/data/features";
 
 export default function Features2() {
   return (
@@ -10,7 +9,7 @@ export default function Features2() {
           </h2>
           <div className="content-single wow fadeInUp">
             <p>
-              Experience the finest luxury chauffeur services in Boston and the surrounding areas. Whether you're traveling for business or leisure, we offer a range of services to meet your needs. Our professional drivers ensure a safe and comfortable journey, with fixed prices and exceptional service.
+              Experience the finest luxury chauffeur services in Boston and the surrounding areas. Whether you&apos;re traveling for business or leisure, we offer a range of services to meet your needs. Our professional drivers ensure a safe and comfortable journey, with fixed prices and exceptional service.
             </p>
             <p>
               Our services include:
@@ -49,7 +48,7 @@ export default function Features2() {
                 Point-to-Point
               </h3>
               <p className="text-16 color-text">
-                Our point-to-point service offers a convenient and efficient way to travel between locations in Boston. Whether it's a meeting, a dinner, or a shopping trip, our professional drivers will get you there on time and in comfort.
+                Our point-to-point service offers a convenient and efficient way to travel between locations in Boston. Whether it&apos;s a meeting, a dinner, or a shopping trip, our professional drivers will get you there on time and in comfort.
               </p>
             </div>
           </div>
@@ -64,7 +63,7 @@ export default function Features2() {
                 Hourly Service
               </h3>
               <p className="text-16 color-text">
-                Enjoy the flexibility of our hourly service, perfect for those who need a chauffeur on standby. Whether you're attending multiple meetings or exploring the city, our service adapts to your schedule.
+                Enjoy the flexibility of our hourly service, perfect for those who need a chauffeur on standby. Whether you&apos;re attending multiple meetings or exploring the city, our service adapts to your schedule.
               </p>
             </div>
           </div>

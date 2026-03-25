@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-
 import { Helmet, HelmetProvider } from "react-helmet-async";
 
 export default function MetaComponent({ meta }) {

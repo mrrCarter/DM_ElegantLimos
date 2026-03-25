@@ -1,6 +1,6 @@
 // BookingExtra.jsx
 
-import React, { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext } from "react";
 import SideBar from "./SideBar";
 import { useNavigate } from "react-router-dom";
 import { BookingContext } from "./BookingContext";

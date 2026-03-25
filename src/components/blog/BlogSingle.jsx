@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { reviews, socials, tags } from "@/data/blogs";
 
 import { useState } from "react";

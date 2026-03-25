@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import Pagination from "../common/Pagination";
-import { carBrands, carTypes, cars } from "@/data/cars";
+import { cars } from "@/data/cars";
 
 import { Link } from "react-router-dom";
 
 export default function FeetList1() {
-  const [selectedCarTypes, setSelectedCarTypes] = useState("All");
-  const [selectedBrand, setSelectedBrand] = useState("All");
+  const [selectedCarTypes] = useState("All");
+  const [selectedBrand] = useState("All");
   const [selectedCars, setSelectedCars] = useState(cars);
   useEffect(() => {
     let items = cars;
