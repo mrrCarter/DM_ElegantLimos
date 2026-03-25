@@ -1,6 +1,6 @@
 // Hero.jsx
 
-import React, { useState, useContext } from "react";
+import { useContext, useState } from "react";
 import DatePickerComponent from "@/components/common/DatePicker";
 import PlacePicker from "@/components/common/PlacePicker";
 import TimePickerComponent from "@/components/common/TimePicker";
@@ -8,31 +8,35 @@ import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useNavigate } from "react-router-dom";
 import { BookingContext } from "@/components/booking/BookingContext";
+import { TRIP_TYPES } from "@/lib/booking";
 
 const banners = [
   {
     id: 1,
-    url: "/assets/imgs/page/homepage1/hero-banner1.jpg",
-    title: "Embark on an Unforgettable Journey",
-    text: "Discover the World with Our Expert Guides",
+    url: "/assets/imgs/SUVlineup.webp",
+    eyebrow: "Airport Transfers",
+    title: "Boston black car service that lands as smoothly as your itinerary.",
+    description:
+      "Reserve Logan pickups, downtown drop-offs, and executive transfers with a booking flow built for polished arrivals.",
+    badges: ["Meet-and-greet ready", "Flight-aware timing", "Professional chauffeurs"],
   },
   {
     id: 2,
-    url: "/assets/imgs/page/homepage1/hero-banner2.jpg",
-    title: "Adventure Awaits",
-    text: "Find Your Perfect Escape",
+    url: "/assets/imgs/luxurySedans.webp",
+    eyebrow: "Hourly Chauffeur",
+    title: "Sedans and SUVs for boardrooms, celebrations, and every stop between.",
+    description:
+      "Book premium hourly coverage when the schedule is fluid but the service still needs to feel exact.",
+    badges: ["Flexible hourly blocks", "Luxury sedan + SUV fleet", "Client-ready presentation"],
   },
   {
     id: 3,
-    url: "/assets/imgs/page/homepage1/hero-banner3.jpg",
-    title: "Luxury Redefined",
-    text: "Travel in Style and Comfort",
-  },
-  {
-    id: 4,
     url: "/assets/imgs/page/homepage1/hero-banner4.jpg",
-    title: "Serenity at Its Best",
-    text: "Relax in the World's Most Beautiful Locations",
+    eyebrow: "Special Events",
+    title: "Premium rides that hold up when the guest list matters.",
+    description:
+      "From corporate dinners to milestone nights, deliver a calm, elevated arrival experience for every passenger.",
+    badges: ["Transparent pricing", "Direct dispatch support", "Luxury event transport"],
   },
 ];
 
@@ -67,7 +71,7 @@ export default function Hero() {
 
   const [fromAddress, setFromAddress] = useState("");
   const [toAddress, setToAddress] = useState("");
-  const [tripType, setTripType] = useState("One Way"); // Default trip type
+  const [tripType, setTripType] = useState("Point-to-Point");
 
   // Validation states
   const [errors, setErrors] = useState({});
@@ -95,7 +99,13 @@ export default function Hero() {
         time: time.toISOString(),
         fromAddress,
         toAddress,
-        tripType, // Add trip type to booking data
+        tripType,
+        vehicle: null,
+        cardLast4Digits: null,
+        paymentIntentId: null,
+        orderNumber: null,
+        currentStep: 1,
+        highestStep: 1,
       }));
 
       navigate("/booking");
@@ -106,7 +116,7 @@ export default function Hero() {
   const isFormValid = date && time && fromAddress && toAddress;
 
   return (
-    <section className="section banner-home1">
+    <section className="section banner-home1 premium-hero">
       <div className="box-swiper">
         <Swiper
           style={{ maxWidth: "100vw", overflow: "hidden" }}
@@ -116,25 +126,35 @@ export default function Hero() {
           {banners.map((elm, i) => (
             <SwiperSlide key={i} className="swiper-slide">
               <div
-                className="box-cover-image boxBgImage"
+                className="box-cover-image boxBgImage premium-hero-slide"
                 style={{
                   backgroundImage: `url(${elm.url})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                   backgroundRepeat: "no-repeat",
-                  height: "350px",
+                  minHeight: "540px",
                   width: "100%",
                   maxWidth: "1920px",
                   margin: "0 auto",
                 }}
-              ></div>
-              <div className="box-banner-info">
-                <p className="text-16 color-white wow fadeInUp">{elm.title}</p>
-                <h2 className="heading-52-medium color-white wow fadeInUp">
-                  {elm.text.split(" ").slice(0, 2).join(" ")}{" "}
-                  <br className="d-none d-lg-block" />
-                  {elm.text.split(" ").slice(2).join(" ")}
-                </h2>
+              >
+                <div className="premium-hero-overlay"></div>
+              </div>
+              <div className="box-banner-info premium-hero-copy">
+                <p className="premium-section-eyebrow wow fadeInUp">
+                  {elm.eyebrow}
+                </p>
+                <h1 className="premium-hero-title wow fadeInUp">{elm.title}</h1>
+                <p className="premium-hero-description wow fadeInUp">
+                  {elm.description}
+                </p>
+                <div className="premium-hero-badges wow fadeInUp">
+                  {elm.badges.map((badge) => (
+                    <span key={badge} className="premium-hero-badge">
+                      {badge}
+                    </span>
+                  ))}
+                </div>
               </div>
             </SwiperSlide>
           ))}
@@ -146,7 +166,15 @@ export default function Hero() {
           </div>
         </Swiper>
       </div>
-      <div className="box-search-ride wow fadeInUp">
+      <div className="box-search-ride wow fadeInUp premium-search-card">
+        <div className="premium-search-intro">
+          <p className="premium-section-eyebrow">Plan Your Ride</p>
+          <h2>Get a polished quote before you ever step curbside.</h2>
+          <p>
+            Choose the route, lock the trip type, and move straight into vehicle
+            selection with transparent pricing.
+          </p>
+        </div>
         <div className="search-item search-date">
           <div className="search-icon">
             <span className="item-icon icon-date"> </span>
@@ -176,7 +204,12 @@ export default function Hero() {
             <PlacePicker
               value={fromAddress}
               onChange={setFromAddress}
-              style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc' }}
+              inputStyle={{
+                width: "100%",
+                padding: "10px",
+                borderRadius: "4px",
+                border: "1px solid #ccc",
+              }}
             />
             {errors.fromAddress && (
               <span className="error-text">{errors.fromAddress}</span>
@@ -192,7 +225,12 @@ export default function Hero() {
             <PlacePicker
               value={toAddress}
               onChange={setToAddress}
-              style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc' }}
+              inputStyle={{
+                width: "100%",
+                padding: "10px",
+                borderRadius: "4px",
+                border: "1px solid #ccc",
+              }}
             />
             {errors.toAddress && (
               <span className="error-text">{errors.toAddress}</span>
@@ -204,14 +242,19 @@ export default function Hero() {
             <label className="text-14 color-grey">Trip Type</label>
             <select
               className="form-control"
-              style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+              style={{
+                width: "100%",
+                padding: "8px",
+                boxSizing: "border-box",
+              }}
               value={tripType}
               onChange={(e) => setTripType(e.target.value)}
             >
-              <option value="One Way">One Way</option>
-              <option value="Round Trip">Round Trip</option>
-              <option value="Hourly">Hourly</option>
-              <option value="Airport Pickup">Airport Pickup</option>
+              {TRIP_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -226,8 +269,22 @@ export default function Hero() {
               src="/assets/imgs/template/icons/search.svg"
               alt="dmelegantlimos"
             />
-            Search
+            Check Availability
           </button>
+        </div>
+      </div>
+      <div className="premium-hero-metrics">
+        <div className="premium-metric-card">
+          <span>Coverage</span>
+          <strong>Logan, Seaport, Back Bay, Cambridge, and Greater Boston</strong>
+        </div>
+        <div className="premium-metric-card">
+          <span>Service Modes</span>
+          <strong>Airport transfers, hourly chauffeur, point-to-point, events</strong>
+        </div>
+        <div className="premium-metric-card">
+          <span>Experience</span>
+          <strong>Luxury sedans and SUVs with direct dispatch support</strong>
         </div>
       </div>
     </section>

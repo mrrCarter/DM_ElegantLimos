@@ -2,23 +2,23 @@ export const features = [
   {
     id: 1,
     icon: "/assets/imgs/page/homepage1/safe.svg",
-    title: "Safety First",
+    title: "Professional chauffeurs",
     description:
-      "Both you and your shipments will travel with professional drivers. Always with the highest quality standards.",
+      "Experienced drivers, clean presentation, and a service standard built for executives, families, and VIP guests.",
   },
   {
     id: 2,
     icon: "/assets/imgs/page/homepage1/price.svg",
-    title: "Prices With No Surprises",
+    title: "Transparent pricing",
     description:
-      "Both you and your shipments will travel with professional drivers. Always with the highest quality standards.",
+      "See the fare structure before checkout, including car-seat add-ons and gratuity, without hidden surprises at the curb.",
   },
   {
     id: 3,
     icon: "/assets/imgs/page/homepage1/vehicle.svg",
-    title: "Private Travel Solutions",
+    title: "Black car flexibility",
     description:
-      "Both you and your shipments will travel with professional drivers. Always with the highest quality standards.",
+      "Airport runs, hourly coverage, nightlife, client transport, and special events from one booking experience.",
   },
 ];
 export var features2 = [

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import Nav from "./components/Nav";
 import { Link } from "react-router-dom";
-import Language from "./components/Language";
+import Nav from "./components/Nav";
 
 export default function Header1() {
   const [scrolled, setScrolled] = useState(false);
@@ -24,20 +23,16 @@ export default function Header1() {
   }, []);
 
   return (
-    <header className={`header sticky-bar ${scrolled ? "stick" : ""}`}>
+    <header className={`header sticky-bar premium-header ${scrolled ? "stick" : ""}`}>
       <div className="container">
-        <div className="main-header">
+        <div className="main-header premium-header-inner">
           <div className="header-left">
             <div className="header-logo">
               <Link className="d-flex" to="/">
                 <img
                   alt="DmElegantLimos"
                   src="assets/dm_logo_2_processed.jpg"
-                  style={{
-                    width: window.innerWidth <= 768 ? "150px" : "150px", // Smaller size for mobile
-                    height: "auto", // Maintain aspect ratio
-                    transition: "width 0.3s ease", // Smooth transition for resizing
-                  }}
+                  className="premium-header-logo"
                 />
               </Link>
             </div>
@@ -47,22 +42,22 @@ export default function Header1() {
                   <Nav />
                 </ul>
               </nav>
-              <div className="burger-icon burger-icon-white"
-              style={{top:"60px"}}>
+              <div
+                className="burger-icon burger-icon-white premium-burger"
+                style={{ top: "60px" }}
+              >
                 <span className="burger-icon-mid"></span>
                 <span className="burger-icon-bottom"></span>
               </div>
             </div>
-            <div className="header-right">
-              <div className="align-middle mr-10">
-                <a
-                  className="text-14-medium call-phone color-white hover-up d-inline"
-                  href="tel:+17817719069"
-                >
-                  +1 (781) 771 - 9069
-                </a>
-              </div>
-            </div>
+          </div>
+          <div className="header-right premium-header-actions">
+            <a className="premium-header-phone" href="tel:+17817719069">
+              +1 (781) 771-9069
+            </a>
+            <Link className="btn premium-header-cta" to="/booking">
+              Reserve Now
+            </Link>
           </div>
         </div>
       </div>

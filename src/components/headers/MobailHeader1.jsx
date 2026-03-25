@@ -10,8 +10,6 @@ export default function MobailHeader1() {
     const wrapper4 = document.body;
 
     const handleClick = (e) => {
-      console.log("first");
-
       navbarTrigger?.classList.toggle("burger-close");
       e.preventDefault();
       container?.classList.toggle("sidebar-visible");
@@ -28,7 +26,7 @@ export default function MobailHeader1() {
   return (
     <div
       className="mobile-header-active mobile-header-wrapper-style perfect-scrollbar"
-      style={{ top: "60px" }} // Move the menu down by 60px
+      style={{ top: "84px" }}
     >
       <div className="mobile-header-wrapper-inner">
         <div className="mobile-header-content-area">

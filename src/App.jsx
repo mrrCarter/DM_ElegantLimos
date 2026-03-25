@@ -1,7 +1,8 @@
 // App.jsx
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import "./styles/style.scss";
+import "./styles/premium.scss";
 import { Route, Routes, useLocation } from "react-router-dom";
 import Home from "./pages";
 import ScrollTopBehaviour from "./components/common/ScrollTopBehaviour";

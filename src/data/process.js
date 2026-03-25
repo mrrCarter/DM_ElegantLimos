@@ -1,23 +1,23 @@
 export const process = [
   {
     id: 1,
-    title: "Create Your Route",
+    title: "Set the itinerary",
     description:
-      "Enter your pickup & dropoff locations or the number of hours you wish to book a car and driver for",
+      "Choose airport transfer, point-to-point, round trip, or hourly service and lock the ride details in one pass.",
     img: "/assets/imgs/page/homepage1/laptop.png",
   },
   {
     id: 2,
-    title: "Choose Vehicle For You",
+    title: "Select the vehicle",
     description:
-      "On the day of your ride, you will receive two email and SMS updates - one informing you that.",
+      "Match the trip to a luxury sedan or SUV with pricing that updates before you reach the payment step.",
     img: "/assets/imgs/page/homepage1/desktop.png",
   },
   {
     id: 3,
-    title: "Enjoy The Journey",
+    title: "Ride with confidence",
     description:
-      "After your ride has taken place, we would appreciate it if you could rate your car and driver.",
+      "Receive confirmation details, arrive on schedule, and stay focused while the chauffeur handles the route.",
     img: "/assets/imgs/page/homepage1/desktop2.png",
   },
 ];

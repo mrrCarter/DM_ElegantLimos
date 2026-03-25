@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import emailjs from "emailjs-com";
+import { isContactFormConfigured } from "@/lib/runtimeConfig";
 
 // Environment Variables
 const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
 const TEMPLATE_ID_COMPANY = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_COMPANY;
 const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+const contactFormConfigured = isContactFormConfigured(import.meta.env);
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
@@ -17,6 +19,7 @@ export default function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [submitError, setSubmitError] = useState("");
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -37,8 +40,15 @@ export default function ContactForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitError("");
+
+    if (!contactFormConfigured) {
+      setSubmitError("Contact form delivery is not configured in this environment.");
+      return;
+    }
+
     if (!validateForm()) return;
     setLoading(true);
 
@@ -49,19 +59,20 @@ export default function ContactForm() {
       message: formData.message,
     };
 
-    emailjs
-      .send(SERVICE_ID, TEMPLATE_ID_COMPANY, templateParams, PUBLIC_KEY)
-      .then(
-        (response) => {
-          console.log("Email sent successfully!", response.status, response.text);
-          setSubmitted(true);
-          setLoading(false);
-        },
-        (error) => {
-          console.error("Failed to send email:", error);
-          setLoading(false);
-        }
+    try {
+      await emailjs.send(
+        SERVICE_ID,
+        TEMPLATE_ID_COMPANY,
+        templateParams,
+        PUBLIC_KEY
       );
+      setSubmitted(true);
+    } catch (error) {
+      console.error("Failed to send email:", error);
+      setSubmitError("We could not send your message right now. Please call dispatch.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -74,6 +85,16 @@ export default function ContactForm() {
           <p className="text-center text-gray wow fadeInUp mb-60">
             We usually respond within a few hours. Your message is important to us!
           </p>
+          {!contactFormConfigured && (
+            <div className="alert alert-warning mb-30" role="status">
+              Contact form email delivery is not configured yet in this environment.
+            </div>
+          )}
+          {submitError && (
+            <div className="alert alert-warning mb-30" role="alert">
+              {submitError}
+            </div>
+          )}
           {submitted ? (
             <div className="text-center mt-40">
               <img
@@ -152,7 +173,11 @@ export default function ContactForm() {
                     </div>
                   </div>
                   <div className="col-lg-12">
-                    <button className="btn btn-primary" type="submit" disabled={loading}>
+                    <button
+                      className="btn btn-primary"
+                      type="submit"
+                      disabled={loading || !contactFormConfigured}
+                    >
                       {loading ? "Sending Message..." : "Send Message"}
                       {!loading && (
                         <svg

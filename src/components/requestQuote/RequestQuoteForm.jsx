@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import emailjs from "emailjs-com";
+import { isQuoteFormConfigured } from "@/lib/runtimeConfig";
 
 // Environment Variables
 const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
 const TEMPLATE_ID_QUOTE = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_QUOTE;
 const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+const quoteFormConfigured = isQuoteFormConfigured(import.meta.env);
 
 export default function RequestQuoteForm() {
   const [formData, setFormData] = useState({
@@ -19,6 +21,7 @@ export default function RequestQuoteForm() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [submitError, setSubmitError] = useState("");
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -40,8 +43,15 @@ export default function RequestQuoteForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitError("");
+
+    if (!quoteFormConfigured) {
+      setSubmitError("Quote request delivery is not configured in this environment.");
+      return;
+    }
+
     if (!validateForm()) return;
     setLoading(true);
 
@@ -54,19 +64,15 @@ export default function RequestQuoteForm() {
       details: formData.details,
     };
 
-    emailjs
-      .send(SERVICE_ID, TEMPLATE_ID_QUOTE, templateParams, PUBLIC_KEY)
-      .then(
-        (response) => {
-          console.log("Quote request sent successfully!", response.status, response.text);
-          setSubmitted(true);
-          setLoading(false);
-        },
-        (error) => {
-          console.error("Failed to send quote request:", error);
-          setLoading(false);
-        }
-      );
+    try {
+      await emailjs.send(SERVICE_ID, TEMPLATE_ID_QUOTE, templateParams, PUBLIC_KEY);
+      setSubmitted(true);
+    } catch (error) {
+      console.error("Failed to send quote request:", error);
+      setSubmitError("We could not send the quote request right now. Please call dispatch.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -79,6 +85,16 @@ export default function RequestQuoteForm() {
           <p className="text-center text-gray wow fadeInUp mb-60">
             Fill out the form below to receive a quote for our services.
           </p>
+          {!quoteFormConfigured && (
+            <div className="alert alert-warning mb-30" role="status">
+              Quote request email delivery is not configured yet in this environment.
+            </div>
+          )}
+          {submitError && (
+            <div className="alert alert-warning mb-30" role="alert">
+              {submitError}
+            </div>
+          )}
           {submitted ? (
             <div className="text-center mt-40">
               <img
@@ -192,7 +208,11 @@ export default function RequestQuoteForm() {
                     </div>
                   </div>
                   <div className="col-lg-12">
-                    <button className="btn btn-primary" type="submit" disabled={loading}>
+                    <button
+                      className="btn btn-primary"
+                      type="submit"
+                      disabled={loading || !quoteFormConfigured}
+                    >
                       {loading ? "Sending Request..." : "Request Quote"}
                       {!loading && (
                         <svg
