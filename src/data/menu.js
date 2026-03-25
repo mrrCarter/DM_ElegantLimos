@@ -26,7 +26,7 @@ export const menuItems = [
   {
     id: 5,
     title: "Book Now",
-    link: "/", // Direct link to Booking page
+    link: "/booking", // Direct link to Booking page
     subMenu: [], // No submenu
   },
   {
