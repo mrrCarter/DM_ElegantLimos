@@ -157,7 +157,6 @@ export default function Hero() {
                         backgroundSize: "cover",
                         backgroundPosition: "center",
                         backgroundRepeat: "no-repeat",
-                        minHeight: "540px",
                         width: "100%",
                         maxWidth: "1920px",
                         margin: "0 auto",
@@ -212,17 +211,20 @@ export default function Hero() {
       </div>
       <form className="box-search-ride wow fadeInUp premium-search-card" onSubmit={handleSearchSubmit} noValidate>
         <div className="premium-search-intro">
-          <p className="premium-section-eyebrow">Plan Your Ride</p>
-          <h2>Get a polished quote before you ever step curbside.</h2>
-          <p>
-            Choose the route, lock the trip type, and move straight into vehicle
-            selection with transparent pricing.
-          </p>
-          <p className="premium-search-note">
-            Mobile-first improvement: the form now keeps labels, errors, and tap
-            targets intact at small widths instead of collapsing into a cramped
-            booking strip.
-          </p>
+          <div className="premium-search-intro__headline">
+            <p className="premium-section-eyebrow">Plan Your Ride</p>
+            <h2>Get a polished quote before you ever step curbside.</h2>
+          </div>
+          <div className="premium-search-intro__support">
+            <p>
+              Choose the route, lock the trip type, and move straight into
+              vehicle selection with transparent pricing.
+            </p>
+            <p className="premium-search-note">
+              Smaller screens now keep labels, helper text, and tap targets
+              readable instead of collapsing into a crowded booking strip.
+            </p>
+          </div>
         </div>
         {hasErrors && (
           <div className="premium-form-alert" role="alert">
@@ -349,7 +351,7 @@ export default function Hero() {
                 }}
                 value={tripType}
                 onChange={(e) => setTripType(e.target.value)}
-                aria-describedby="hero-trip-type-help"
+                aria-describedby="hero-trip-type-help hero-trip-type-help-mobile"
               >
                 {TRIP_TYPES.map((type) => (
                   <option key={type} value={type}>
@@ -358,7 +360,10 @@ export default function Hero() {
                 ))}
               </select>
             </div>
-            <p id="hero-trip-type-help" className="premium-select-helper">
+            <span id="hero-trip-type-help" className="premium-sr-only">
+              {tripTypeHelperText}
+            </span>
+            <p id="hero-trip-type-help-mobile" className="premium-select-helper">
               <span className="premium-select-helper__visual" aria-hidden="true">
                 <span className="premium-select-helper__cab"></span>
                 <span className="premium-select-helper__route"></span>
