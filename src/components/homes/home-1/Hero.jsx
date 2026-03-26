@@ -1,12 +1,10 @@
-// Hero.jsx
-
 import { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import DatePickerComponent from "@/components/common/DatePicker";
 import PlacePicker from "@/components/common/PlacePicker";
 import TimePickerComponent from "@/components/common/TimePicker";
-import { Autoplay, Navigation, Pagination } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Link, useNavigate } from "react-router-dom";
 import { BookingContext } from "@/components/booking/BookingContext";
 import { TRIP_TYPES } from "@/lib/booking";
 
@@ -15,34 +13,31 @@ const banners = [
     id: 1,
     url: "/assets/imgs/SUVlineup.webp",
     eyebrow: "Airport Transfers",
-    title: "Boston black car service that lands as smoothly as your itinerary.",
+    title: "Black car service for calm Logan arrivals.",
     description:
-      "Reserve Logan pickups, downtown drop-offs, and executive transfers with a booking flow built for polished arrivals.",
-    badges: ["Meet-and-greet ready", "Flight-aware timing", "Professional chauffeurs"],
+      "Reserve airport pickups, hotel transfers, and executive rides with polished vehicles and direct dispatch support.",
   },
   {
     id: 2,
     url: "/assets/imgs/luxurySedans.webp",
     eyebrow: "Hourly Chauffeur",
-    title: "Sedans and SUVs for boardrooms, celebrations, and every stop between.",
+    title: "Hourly chauffeur coverage for multi-stop days.",
     description:
-      "Book premium hourly coverage when the schedule is fluid but the service still needs to feel exact.",
-    badges: ["Flexible hourly blocks", "Luxury sedan + SUV fleet", "Client-ready presentation"],
+      "Choose hourly service when the itinerary keeps changing but the presentation still has to feel exact from first pickup to final stop.",
   },
   {
     id: 3,
     url: "/assets/imgs/page/homepage1/hero-banner4.jpg",
-    eyebrow: "Special Events",
-    title: "Premium rides that hold up when the guest list matters.",
+    eyebrow: "Events and Special Nights",
+    title: "Event transportation that arrives polished.",
     description:
-      "From corporate dinners to milestone nights, deliver a calm, elevated arrival experience for every passenger.",
-    badges: ["Transparent pricing", "Direct dispatch support", "Luxury event transport"],
+      "Handle weddings, VIP hosting, and milestone nights with premium transport built to feel smooth before, during, and after the event.",
   },
 ];
 
 function formatTripTypeOptions(types) {
   if (types.length === 0) {
-    return "other service options";
+    return "other trip options";
   }
 
   if (types.length === 1) {
@@ -78,38 +73,30 @@ export default function Hero() {
 
   const navigate = useNavigate();
   const { setBookingData } = useContext(BookingContext);
-
-  // Initialize date and time as JavaScript Date objects
   const [date, setDate] = useState(new Date());
-  const [time, setTime] = useState(
-    new Date(Date.now() + 2 * 60 * 60 * 1000) // Current time + 2 hours
-  );
-
+  const [time, setTime] = useState(new Date(Date.now() + 2 * 60 * 60 * 1000));
   const [fromAddress, setFromAddress] = useState("");
   const [toAddress, setToAddress] = useState("");
   const [tripType, setTripType] = useState("Point-to-Point");
-
-  // Validation states
   const [errors, setErrors] = useState({});
 
   const handleSearchSubmit = (event) => {
     event.preventDefault();
 
-    // Additional validation before navigation
     const validationErrors = {};
 
     if (!date) validationErrors.date = "Please select a date.";
     if (!time) validationErrors.time = "Please select a time.";
-    if (!fromAddress)
+    if (!fromAddress) {
       validationErrors.fromAddress = "Please enter a pickup location.";
-    if (!toAddress)
+    }
+    if (!toAddress) {
       validationErrors.toAddress = "Please enter a drop-off location.";
+    }
 
     setErrors(validationErrors);
 
-    // If there are no validation errors, proceed
     if (Object.keys(validationErrors).length === 0) {
-      // Store the initial booking data in context
       setBookingData((prev) => ({
         ...prev,
         date: date.toISOString(),
@@ -131,9 +118,9 @@ export default function Hero() {
 
   const hasErrors = Object.keys(errors).length > 0;
   const alternateTripTypes = TRIP_TYPES.filter((type) => type !== tripType);
-  const tripTypeHelperText = `Need a different ride style? Tap here for ${formatTripTypeOptions(
+  const tripTypeHelperText = `Change trip type here for ${formatTripTypeOptions(
     alternateTripTypes
-  )} before checking availability.`;
+  )}.`;
 
   return (
     <section className="section banner-home1 premium-hero" aria-labelledby="home-hero-title">
@@ -143,64 +130,53 @@ export default function Hero() {
           {...settings}
           className="swiper-container swiper-banner-1 pb-0"
         >
-          {banners.map((elm, i) => (
-            <SwiperSlide key={i} className="swiper-slide">
-              {(() => {
-                const HeadingTag = i === 0 ? "h1" : "h2";
+          {banners.map((banner, index) => {
+            const HeadingTag = index === 0 ? "h1" : "h2";
 
-                return (
-                  <>
-                    <div
-                      className="box-cover-image boxBgImage premium-hero-slide"
-                      style={{
-                        backgroundImage: `url(${elm.url})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                        backgroundRepeat: "no-repeat",
-                        width: "100%",
-                        maxWidth: "1920px",
-                        margin: "0 auto",
-                      }}
+            return (
+              <SwiperSlide key={banner.id} className="swiper-slide">
+                <div
+                  className="box-cover-image boxBgImage premium-hero-slide"
+                  style={{
+                    backgroundImage: `url(${banner.url})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                    width: "100%",
+                    maxWidth: "1920px",
+                    margin: "0 auto",
+                  }}
+                ></div>
+                <div className="box-banner-info premium-hero-copy">
+                  <div className="premium-hero-copy-shell">
+                    <p className="premium-section-eyebrow wow fadeInUp">
+                      {banner.eyebrow}
+                    </p>
+                    <HeadingTag
+                      id={index === 0 ? "home-hero-title" : undefined}
+                      className="premium-hero-title wow fadeInUp"
                     >
-                      <div className="premium-hero-overlay"></div>
-                    </div>
-                    <div className="box-banner-info premium-hero-copy">
-                      <p className="premium-section-eyebrow wow fadeInUp">
-                        {elm.eyebrow}
-                      </p>
-                      <HeadingTag
-                        id={i === 0 ? "home-hero-title" : undefined}
-                        className="premium-hero-title wow fadeInUp"
+                      {banner.title}
+                    </HeadingTag>
+                    <p className="premium-hero-description wow fadeInUp">
+                      {banner.description}
+                    </p>
+                    <div className="premium-hero-actions wow fadeInUp">
+                      <Link className="btn btn-primary" to="/booking">
+                        Reserve a Ride
+                      </Link>
+                      <a
+                        className="premium-footer-link premium-footer-link--ghost"
+                        href="tel:+17817719069"
                       >
-                        {elm.title}
-                      </HeadingTag>
-                      <p className="premium-hero-description wow fadeInUp">
-                        {elm.description}
-                      </p>
-                      <div className="premium-hero-badges wow fadeInUp">
-                        {elm.badges.map((badge) => (
-                          <span key={badge} className="premium-hero-badge">
-                            {badge}
-                          </span>
-                        ))}
-                      </div>
-                      <div className="premium-hero-actions wow fadeInUp">
-                        <Link className="btn btn-primary" to="/booking">
-                          Reserve a Ride
-                        </Link>
-                        <a
-                          className="premium-footer-link premium-footer-link--ghost"
-                          href="tel:+17817719069"
-                        >
-                          Call Dispatch
-                        </a>
-                      </div>
+                        Call Dispatch
+                      </a>
                     </div>
-                  </>
-                );
-              })()}
-            </SwiperSlide>
-          ))}
+                  </div>
+                </div>
+              </SwiperSlide>
+            );
+          })}
 
           <div className="box-pagination-button hero1nagigation">
             <div className="swiper-button-prev swiper-button-prev-banner snbp2"></div>
@@ -209,32 +185,17 @@ export default function Hero() {
           </div>
         </Swiper>
       </div>
-      <form className="box-search-ride wow fadeInUp premium-search-card" onSubmit={handleSearchSubmit} noValidate>
-        <div className="premium-search-intro">
-          <div className="premium-search-intro__headline">
-            <p className="premium-section-eyebrow">Plan Your Ride</p>
-            <h2>Get a polished quote before you ever step curbside.</h2>
-          </div>
-          <div className="premium-search-intro__support">
-            <p>
-              Choose the route, lock the trip type, and move straight into
-              vehicle selection with transparent pricing.
-            </p>
-            <p className="premium-search-note">
-              On mobile, labels, helper text, and tap targets stay readable
-              instead of collapsing into a crowded booking strip.
-            </p>
-          </div>
-        </div>
+
+      <form className="box-search-ride premium-search-ride wow fadeInUp" onSubmit={handleSearchSubmit} noValidate>
         {hasErrors && (
           <div className="premium-form-alert" role="alert">
-            Review the highlighted fields before continuing to vehicle
-            selection.
+            Review the highlighted booking fields before continuing.
           </div>
         )}
+
         <div className="search-item search-date">
           <div className="search-icon">
-            <span className="item-icon icon-date"> </span>
+            <span className="item-icon icon-date"></span>
           </div>
           <div className="search-inputs">
             <label className="text-14 color-grey" htmlFor="hero-trip-date">
@@ -254,9 +215,10 @@ export default function Hero() {
             )}
           </div>
         </div>
+
         <div className="search-item search-time">
           <div className="search-icon">
-            <span className="item-icon icon-time"> </span>
+            <span className="item-icon icon-time"></span>
           </div>
           <div className="search-inputs">
             <label className="text-14 color-grey" htmlFor="hero-trip-time">
@@ -276,26 +238,28 @@ export default function Hero() {
             )}
           </div>
         </div>
+
         <div className="search-item search-from">
           <div className="search-icon">
-            <span className="item-icon icon-from"> </span>
+            <span className="item-icon icon-from"></span>
           </div>
           <div className="search-inputs">
             <label className="text-14 color-grey" htmlFor="hero-trip-from">
-              From
+              Pickup
             </label>
             <PlacePicker
               id="hero-trip-from"
               name="trip-from"
-              label="Pickup location"
+              label="Enter pickup location"
               value={fromAddress}
               onChange={setFromAddress}
               ariaDescribedBy={errors.fromAddress ? "hero-trip-from-error" : undefined}
               inputStyle={{
                 width: "100%",
-                padding: "10px",
-                borderRadius: "4px",
-                border: "1px solid #ccc",
+                padding: "10px 0",
+                borderRadius: "0",
+                border: "none",
+                borderBottom: "1px solid #ccc",
               }}
             />
             {errors.fromAddress && (
@@ -305,26 +269,28 @@ export default function Hero() {
             )}
           </div>
         </div>
+
         <div className="search-item search-to">
           <div className="search-icon">
-            <span className="item-icon icon-to"> </span>
+            <span className="item-icon icon-to"></span>
           </div>
           <div className="search-inputs">
             <label className="text-14 color-grey" htmlFor="hero-trip-to">
-              To
+              Drop-off
             </label>
             <PlacePicker
               id="hero-trip-to"
               name="trip-to"
-              label="Drop-off location"
+              label="Enter destination"
               value={toAddress}
               onChange={setToAddress}
               ariaDescribedBy={errors.toAddress ? "hero-trip-to-error" : undefined}
               inputStyle={{
                 width: "100%",
-                padding: "10px",
-                borderRadius: "4px",
-                border: "1px solid #ccc",
+                padding: "10px 0",
+                borderRadius: "0",
+                border: "none",
+                borderBottom: "1px solid #ccc",
               }}
             />
             {errors.toAddress && (
@@ -334,7 +300,11 @@ export default function Hero() {
             )}
           </div>
         </div>
+
         <div className="search-item search-trip-type">
+          <div className="search-icon">
+            <span className="item-icon premium-trip-icon" aria-hidden="true"></span>
+          </div>
           <div className="search-inputs">
             <label className="text-14 color-grey" htmlFor="hero-trip-type">
               Trip Type
@@ -344,13 +314,8 @@ export default function Hero() {
                 id="hero-trip-type"
                 name="trip-type"
                 className="form-control premium-select-input"
-                style={{
-                  width: "100%",
-                  padding: "8px",
-                  boxSizing: "border-box",
-                }}
                 value={tripType}
-                onChange={(e) => setTripType(e.target.value)}
+                onChange={(event) => setTripType(event.target.value)}
                 aria-describedby="hero-trip-type-help hero-trip-type-help-mobile"
               >
                 {TRIP_TYPES.map((type) => (
@@ -373,6 +338,7 @@ export default function Hero() {
             </p>
           </div>
         </div>
+
         <div className="search-item search-button">
           <button className="btn btn-search" type="submit">
             <img
@@ -384,20 +350,6 @@ export default function Hero() {
           </button>
         </div>
       </form>
-      <div className="premium-hero-metrics">
-        <div className="premium-metric-card">
-          <span>Coverage</span>
-          <strong>Logan, Seaport, Back Bay, Cambridge, and Greater Boston</strong>
-        </div>
-        <div className="premium-metric-card">
-          <span>Service Modes</span>
-          <strong>Airport transfers, hourly chauffeur, point-to-point, events</strong>
-        </div>
-        <div className="premium-metric-card">
-          <span>Experience</span>
-          <strong>Luxury sedans and SUVs with direct dispatch support</strong>
-        </div>
-      </div>
     </section>
   );
 }

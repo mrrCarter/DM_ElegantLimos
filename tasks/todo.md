@@ -31,3 +31,8 @@
 - Temporary public link is live at `https://dklu8w4j3y5o1.cloudfront.net/`
 - P4 branch will carry the additional frontpage/mobile/a11y and Omar remediation work requested after deployment
 - Verification completed locally with `npm run lint`, `npm run test`, `npm run build`, and Playwright mobile/browser smoke across `/` and `/booking`
+
+## Regression Follow-up 2026-03-26
+- [x] Roll the hero and booking strip back toward the original structure instead of stacking a second premium card over the hero
+- [x] Simplify mobile hero content so the burger, headline, primary CTA, and booking form all stay visible without collisions
+- [x] Re-verify desktop and mobile homepage rendering with browser screenshots before redeploying
