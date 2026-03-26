@@ -42,14 +42,30 @@ export default function PlacePicker({
     }
   };
 
+  const fetchWithTimeout = async (url, timeoutMs) => {
+    const abortController = new AbortController();
+    const timeoutId = window.setTimeout(() => {
+      abortController.abort();
+    }, timeoutMs);
+
+    try {
+      return await fetch(url, {
+        signal: abortController.signal,
+      });
+    } finally {
+      window.clearTimeout(timeoutId);
+    }
+  };
+
   const reverseGeocode = async ({ latitude, longitude }) => {
     const geocodeUrl = new URL("https://maps.googleapis.com/maps/api/geocode/json");
     geocodeUrl.searchParams.set("latlng", `${latitude},${longitude}`);
     geocodeUrl.searchParams.set("key", geocodeApiKey);
 
-    const response = await fetch(geocodeUrl.toString(), {
-      signal: AbortSignal.timeout(GEOCODE_REQUEST_TIMEOUT_MS),
-    });
+    const response = await fetchWithTimeout(
+      geocodeUrl.toString(),
+      GEOCODE_REQUEST_TIMEOUT_MS
+    );
 
     if (!response.ok) {
       throw new Error(`Geocode lookup failed with status ${response.status}`);
