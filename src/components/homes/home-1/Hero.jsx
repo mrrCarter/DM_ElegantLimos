@@ -165,12 +165,6 @@ export default function Hero() {
                       <Link className="btn btn-primary" to="/booking">
                         Reserve a Ride
                       </Link>
-                      <a
-                        className="premium-footer-link premium-footer-link--ghost"
-                        href="tel:+17817719069"
-                      >
-                        Call Dispatch
-                      </a>
                     </div>
                   </div>
                 </div>
