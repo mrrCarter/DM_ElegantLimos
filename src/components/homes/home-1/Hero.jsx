@@ -40,6 +40,22 @@ const banners = [
   },
 ];
 
+function formatTripTypeOptions(types) {
+  if (types.length === 0) {
+    return "other service options";
+  }
+
+  if (types.length === 1) {
+    return types[0];
+  }
+
+  if (types.length === 2) {
+    return `${types[0]} or ${types[1]}`;
+  }
+
+  return `${types.slice(0, -1).join(", ")}, or ${types[types.length - 1]}`;
+}
+
 export default function Hero() {
   const settings = {
     slidesPerView: 1,
@@ -114,6 +130,10 @@ export default function Hero() {
   };
 
   const hasErrors = Object.keys(errors).length > 0;
+  const alternateTripTypes = TRIP_TYPES.filter((type) => type !== tripType);
+  const tripTypeHelperText = `Need a different ride style? Tap here for ${formatTripTypeOptions(
+    alternateTripTypes
+  )} before checking availability.`;
 
   return (
     <section className="section banner-home1 premium-hero" aria-labelledby="home-hero-title">
@@ -317,24 +337,35 @@ export default function Hero() {
             <label className="text-14 color-grey" htmlFor="hero-trip-type">
               Trip Type
             </label>
-            <select
-              id="hero-trip-type"
-              name="trip-type"
-              className="form-control"
-              style={{
-                width: "100%",
-                padding: "8px",
-                boxSizing: "border-box",
-              }}
-              value={tripType}
-              onChange={(e) => setTripType(e.target.value)}
-            >
-              {TRIP_TYPES.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
+            <div className="premium-select-shell premium-select-shell--trip-type">
+              <select
+                id="hero-trip-type"
+                name="trip-type"
+                className="form-control premium-select-input"
+                style={{
+                  width: "100%",
+                  padding: "8px",
+                  boxSizing: "border-box",
+                }}
+                value={tripType}
+                onChange={(e) => setTripType(e.target.value)}
+                aria-describedby="hero-trip-type-help"
+              >
+                {TRIP_TYPES.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <p id="hero-trip-type-help" className="premium-select-helper">
+              <span className="premium-select-helper__visual" aria-hidden="true">
+                <span className="premium-select-helper__cab"></span>
+                <span className="premium-select-helper__route"></span>
+                <span className="premium-select-helper__arrow"></span>
+              </span>
+              <span className="premium-select-helper__copy">{tripTypeHelperText}</span>
+            </p>
           </div>
         </div>
         <div className="search-item search-button">
