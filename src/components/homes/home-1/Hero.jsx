@@ -221,8 +221,8 @@ export default function Hero() {
               vehicle selection with transparent pricing.
             </p>
             <p className="premium-search-note">
-              Smaller screens now keep labels, helper text, and tap targets
-              readable instead of collapsing into a crowded booking strip.
+              On mobile, labels, helper text, and tap targets stay readable
+              instead of collapsing into a crowded booking strip.
             </p>
           </div>
         </div>
