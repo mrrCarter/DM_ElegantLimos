@@ -25,7 +25,7 @@
 - [x] Upgrade the home page with stronger mobile-first presentation and premium brand motion
 - [x] Tighten keyboard, focus, labels, and mobile navigation behavior on core entry flows
 - [x] Re-run lint, tests, build, and browser/mobile smoke checks
-- [ ] Push the branch and create the follow-on PR for review
+- [x] Push the branch and create the follow-on PR for review
 
 ## Review
 - Temporary public link is live at `https://dklu8w4j3y5o1.cloudfront.net/`
