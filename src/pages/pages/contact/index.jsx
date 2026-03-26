@@ -15,7 +15,7 @@ export default function ContactPage1() {
       <MetaComponent meta={metadata} />
       <Header1 />
       <MobailHeader1 />
-      <main className="main">
+      <main id="main-content" className="main">
         {/* <BreadCumb /> */}
         {/* <Offices /> */}
         {/* <Map /> */}

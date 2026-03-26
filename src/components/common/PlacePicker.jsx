@@ -1,14 +1,27 @@
 // PlacePicker.jsx
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { Autocomplete } from "@react-google-maps/api";
-import axios from "axios";
 
-export default function PlacePicker({ label, value, onChange, inputStyle }) {
+const GEOCODE_REQUEST_TIMEOUT_MS = 10000;
+
+export default function PlacePicker({
+  id,
+  label,
+  name,
+  value,
+  onChange,
+  inputStyle,
+  ariaDescribedBy,
+}) {
   const [autocomplete, setAutocomplete] = useState(null);
   const [inputValue, setInputValue] = useState(value ?? "");
+  const generatedId = useId();
+  const inputId = id ?? generatedId;
+  const inputLabel = label || "Enter a location";
   const hasGoogleMaps =
     typeof window !== "undefined" && Boolean(window.google?.maps?.places);
+  const geocodeApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
   useEffect(() => {
     setInputValue(value ?? "");
@@ -29,6 +42,38 @@ export default function PlacePicker({ label, value, onChange, inputStyle }) {
     }
   };
 
+  const fetchWithTimeout = async (url, timeoutMs) => {
+    const abortController = new AbortController();
+    const timeoutId = window.setTimeout(() => {
+      abortController.abort();
+    }, timeoutMs);
+
+    try {
+      return await fetch(url, {
+        signal: abortController.signal,
+      });
+    } finally {
+      window.clearTimeout(timeoutId);
+    }
+  };
+
+  const reverseGeocode = async ({ latitude, longitude }) => {
+    const geocodeUrl = new URL("https://maps.googleapis.com/maps/api/geocode/json");
+    geocodeUrl.searchParams.set("latlng", `${latitude},${longitude}`);
+    geocodeUrl.searchParams.set("key", geocodeApiKey);
+
+    const response = await fetchWithTimeout(
+      geocodeUrl.toString(),
+      GEOCODE_REQUEST_TIMEOUT_MS
+    );
+
+    if (!response.ok) {
+      throw new Error(`Geocode lookup failed with status ${response.status}`);
+    }
+
+    return response.json();
+  };
+
   const handleCurrentLocationClick = async () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -36,10 +81,8 @@ export default function PlacePicker({ label, value, onChange, inputStyle }) {
           const { latitude, longitude } = position.coords;
           console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
           try {
-            const response = await axios.get(
-              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}`
-            );
-            const address = response.data.results[0]?.formatted_address;
+            const geocodeResponse = await reverseGeocode({ latitude, longitude });
+            const address = geocodeResponse.results[0]?.formatted_address;
             if (address) {
               setInputValue(address);
               if (onChange) onChange(address);
@@ -64,6 +107,7 @@ export default function PlacePicker({ label, value, onChange, inputStyle }) {
         <button
           type="button"
           onClick={handleCurrentLocationClick}
+          aria-label={`Use current location for ${inputLabel.toLowerCase()}`}
           style={{
             textDecoration: "underline",
             color: "var(--premium-accent)",
@@ -81,15 +125,20 @@ export default function PlacePicker({ label, value, onChange, inputStyle }) {
       {hasGoogleMaps ? (
         <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
           <input
+            id={inputId}
+            name={name ?? inputId}
             type="text"
             className="form-control"
-            placeholder={label || "Enter a location"}
+            placeholder={inputLabel}
             value={inputValue}
             onChange={(event) => {
               const nextValue = event.target.value;
               setInputValue(nextValue);
               if (onChange) onChange(nextValue);
             }}
+            aria-label={inputLabel}
+            aria-describedby={ariaDescribedBy}
+            autoComplete="street-address"
             style={{
               width: "100%",
               border: "none",
@@ -104,15 +153,20 @@ export default function PlacePicker({ label, value, onChange, inputStyle }) {
         </Autocomplete>
       ) : (
         <input
+          id={inputId}
+          name={name ?? inputId}
           type="text"
           className="form-control"
-          placeholder={label || "Enter a location"}
+          placeholder={inputLabel}
           value={inputValue}
           onChange={(event) => {
             const nextValue = event.target.value;
             setInputValue(nextValue);
             if (onChange) onChange(nextValue);
           }}
+          aria-label={inputLabel}
+          aria-describedby={ariaDescribedBy}
+          autoComplete="street-address"
           style={{
             width: "100%",
             border: "none",

@@ -43,8 +43,8 @@ function SideBar() {
   } = bookingData;
 
   const [isEditing, setIsEditing] = useState(false);
-  const [isMapsApiLoaded, setIsMapsApiLoaded] = useState(
-    Boolean(window.google && window.google.maps)
+  const isMapsApiLoaded = Boolean(
+    typeof window !== "undefined" && window.google?.maps
   );
 
   const [localData, setLocalData] = useState({
@@ -56,22 +56,6 @@ function SideBar() {
     luggage: passengerInfo?.luggage || 0,
     tripType: tripType || "Point-to-Point",
   });
-
-  useEffect(() => {
-    if (window.google && window.google.maps) {
-      setIsMapsApiLoaded(true);
-      return undefined;
-    }
-
-    const interval = setInterval(() => {
-      if (window.google && window.google.maps) {
-        setIsMapsApiLoaded(true);
-        clearInterval(interval);
-      }
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, []);
 
   const calculateRoute = useCallback(
     (origin, destination) => {

@@ -1,26 +1,37 @@
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { Link } from "react-router-dom";
 import Nav from "./components/Nav";
+import {
+  getMobileMenuSnapshot,
+  subscribeToMobileMenu,
+  toggleMobileMenu,
+} from "@/lib/mobileMenuStore";
+
+const subscribeToScroll = (callback) => {
+  if (typeof window === "undefined") {
+    return () => {};
+  }
+
+  window.addEventListener("scroll", callback, { passive: true });
+  return () => {
+    window.removeEventListener("scroll", callback);
+  };
+};
+
+const getScrollSnapshot = () =>
+  typeof window !== "undefined" ? window.scrollY > 200 : false;
 
 export default function Header1() {
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 200) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    // Clean up the event listener when component unmounts
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+  const scrolled = useSyncExternalStore(
+    subscribeToScroll,
+    getScrollSnapshot,
+    () => false
+  );
+  const isMobileMenuOpen = useSyncExternalStore(
+    subscribeToMobileMenu,
+    getMobileMenuSnapshot,
+    () => false
+  );
 
   return (
     <header className={`header sticky-bar premium-header ${scrolled ? "stick" : ""}`}>
@@ -42,13 +53,20 @@ export default function Header1() {
                   <Nav />
                 </ul>
               </nav>
-              <div
-                className="burger-icon burger-icon-white premium-burger"
-                style={{ top: "60px" }}
+              <button
+                type="button"
+                className={`burger-icon burger-icon-white premium-burger d-xl-none ${
+                  isMobileMenuOpen ? "burger-close" : ""
+                }`}
+                onClick={toggleMobileMenu}
+                aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+                aria-controls="mobile-navigation"
+                aria-expanded={isMobileMenuOpen}
               >
+                <span className="burger-icon-top"></span>
                 <span className="burger-icon-mid"></span>
                 <span className="burger-icon-bottom"></span>
-              </div>
+              </button>
             </div>
           </div>
           <div className="header-right premium-header-actions">

@@ -8,6 +8,7 @@ permissions:
   contents: read
   checks: write
   pull-requests: write
+  id-token: write
 
 jobs:
   quality-gates:
@@ -48,8 +49,10 @@ jobs:
 
       - uses: mrrCarter/sentinelayer-v1-action@14ca51c75ca81fdb6e6b7668d417d6a5abc39018
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          openai_api_key: ${{ secrets.OPENAI_API_KEY }}
           sentinelayer_token: ${{ secrets.SENTINELAYER_TOKEN }}
           sentinelayer_spec_id: 2cf704797d0c7567d40bfd2a9b0b07d46bd58dce96c4490cdb715cf1ab611155
           severity_gate: P2
           scan_mode: deep
-          wait_for_completion: "true"
+          llm_failure_policy: deterministic_only

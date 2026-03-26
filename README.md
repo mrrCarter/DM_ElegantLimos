@@ -52,6 +52,7 @@ Server variables:
 GitHub workflow secret:
 
 - `SENTINELAYER_TOKEN`
+- `OPENAI_API_KEY`
 
 ## EC2 deployment
 

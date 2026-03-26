@@ -3,7 +3,14 @@
 import DatePicker, { DateObject } from "react-multi-date-picker";
 import TimePickerPlugin from "react-multi-date-picker/plugins/time_picker";
 
-export default function TimePickerComponent({ value, onChange }) {
+export default function TimePickerComponent({
+  id,
+  name,
+  value,
+  onChange,
+  ariaLabel,
+  placeholder = "Select time",
+}) {
   const handleTimeChange = (newValue) => {
     if (newValue) {
       onChange(newValue.toDate());
@@ -14,12 +21,15 @@ export default function TimePickerComponent({ value, onChange }) {
 
   return (
     <DatePicker
+      id={id}
+      name={name ?? id}
+      aria-label={ariaLabel}
       format="hh:mm A"
       value={value ? new DateObject(value) : null}
       onChange={handleTimeChange}
       plugins={[<TimePickerPlugin key="time-picker" position="bottom" />]}
       disableDayPicker
-      placeholder="Select time"
+      placeholder={placeholder}
       style={{
         width: "100%",
         border: "none",

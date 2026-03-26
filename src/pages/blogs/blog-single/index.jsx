@@ -14,7 +14,7 @@ export default function BlogsSinglePage() {
     <>
       <MetaComponent meta={metadata} />
       <Header1 /> <MobailHeader1 />
-      <main className="main">
+      <main id="main-content" className="main">
         {/* <BlogSingle blog={blog} /> */}
         {/* <RelatedBlogs /> */}
         <ComingSoon />  

@@ -1,4 +1,5 @@
 import { features } from "@/data/features";
+import { Link } from "react-router-dom";
 
 export default function Features() {
   return (
@@ -12,22 +13,33 @@ export default function Features() {
             polished vehicles, and chauffeurs who know the assignment.
           </p>
         </div>
-        <div className="row mt-50 premium-feature-grid">
+        <div className="premium-feature-grid">
           {features.map((elm, i) => (
-            <div key={i} className="col-lg-4">
-              <div className="cardIconTitleDesc premium-feature-card">
-                <div className="cardIcon">
-                  <img src={elm.icon} alt={elm.title} />
-                </div>
-                <div className="cardTitle">
-                  <h5 className="text-20-medium color-text">{elm.title}</h5>
-                </div>
-                <div className="cardDesc">
-                  <p className="text-16 color-text">{elm.description}</p>
-                </div>
+            <article key={i} className="cardIconTitleDesc premium-feature-card">
+              <div className="cardIcon">
+                <img src={elm.icon} alt={elm.title} />
               </div>
-            </div>
+              <div className="cardTitle">
+                <h5 className="text-20-medium color-text">{elm.title}</h5>
+              </div>
+              <div className="cardDesc">
+                <p className="text-16 color-text">{elm.description}</p>
+              </div>
+            </article>
           ))}
+        </div>
+        <div className="premium-feature-note">
+          <div>
+            <span className="premium-section-eyebrow">Concierge Option</span>
+            <p>
+              Need event transport or a more complex itinerary? Use the quote
+              flow for manual coordination instead of forcing a generic checkout
+              path.
+            </p>
+          </div>
+          <Link className="premium-footer-link" to="/request-a-quote">
+            Talk to Dispatch
+          </Link>
         </div>
       </div>
     </section>

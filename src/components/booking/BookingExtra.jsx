@@ -1,6 +1,6 @@
 // BookingExtra.jsx
 
-import { useEffect, useState, useContext } from "react";
+import { useState, useContext } from "react";
 import SideBar from "./SideBar";
 import { useNavigate } from "react-router-dom";
 import { BookingContext } from "./BookingContext";
@@ -63,11 +63,6 @@ export default function BookingExtra() {
 
     navigate("/booking-passenger");
   };
-
-  useEffect(() => {
-    // Any additional effects
-  }, []);
-
   return (
     <div className="box-row-tab mt-50">
       <div className="box-tab-left">

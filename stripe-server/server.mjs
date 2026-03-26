@@ -20,6 +20,7 @@ const corsOrigins = (process.env.CORS_ORIGINS_CSV ?? "http://localhost:1573")
   .filter(Boolean);
 
 app.disable("x-powered-by");
+app.set("trust proxy", true);
 app.use(
   cors({
     origin(origin, callback) {
@@ -34,7 +35,50 @@ app.use(
 );
 app.use(express.json({ limit: "100kb" }));
 
+app.use((req, res, next) => {
+  const isSecureRequest = req.secure || req.get("x-forwarded-proto") === "https";
+  const contentSecurityPolicy = [
+    "default-src 'self'",
+    "base-uri 'self'",
+    "object-src 'none'",
+    "frame-ancestors 'none'",
+    "img-src 'self' data: blob: https:",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.bunny.net",
+    "font-src 'self' data: https://fonts.gstatic.com https://fonts.bunny.net",
+    "connect-src 'self' https://api.emailjs.com https://api.stripe.com https://m.stripe.com https://maps.googleapis.com https://maps.gstatic.com",
+    "script-src 'self' 'unsafe-inline' https://js.stripe.com https://maps.googleapis.com",
+    "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://www.google.com",
+    "worker-src 'self' blob:",
+    "form-action 'self'",
+  ].join("; ");
+
+  res.setHeader("Content-Security-Policy", contentSecurityPolicy);
+  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(self)");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+
+  if (isSecureRequest) {
+    res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  }
+
+  next();
+});
+
 app.get("/api/health", (_req, res) => {
+  res.json({
+    ok: true,
+    stripeConfigured: Boolean(stripeClient),
+  });
+});
+
+app.get("/health", (_req, res) => {
+  res.json({
+    ok: true,
+  });
+});
+
+app.get("/ready", (_req, res) => {
   res.json({
     ok: true,
     stripeConfigured: Boolean(stripeClient),

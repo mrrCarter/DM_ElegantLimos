@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Slider from "react-slick";
 import { process } from "@/data/process";
 
@@ -47,13 +47,6 @@ function NextArrow() {
 export default function Process() {
   const [nav1, setNav1] = useState(null);
   const [nav2, setNav2] = useState(null);
-  let sliderRef1 = useRef(null);
-  let sliderRef2 = useRef(null);
-
-  useEffect(() => {
-    setNav1(sliderRef1);
-    setNav2(sliderRef2);
-  }, []);
 
   const options = {
     slidesToShow: 1,
@@ -68,7 +61,7 @@ export default function Process() {
   const options2 = {
     slidesToShow: 3,
     slidesToScroll: 1,
-    asNavFor: sliderRef1.current,
+    asNavFor: nav1,
     dots: false,
     arrows: false,
     focusOnSelect: true,
@@ -89,7 +82,7 @@ export default function Process() {
               <div className="detail-gallery wow fadeInUp">
                 <Slider
                   asNavFor={nav2}
-                  ref={(slider) => (sliderRef1 = slider)}
+                  ref={setNav1}
                   {...options}
                   className="main-image-slider"
                 >
@@ -106,7 +99,7 @@ export default function Process() {
             <Slider
               {...options2}
               asNavFor={nav1}
-              ref={(slider) => (sliderRef2 = slider)}
+              ref={setNav2}
               className="slider-nav-thumbnails list-how"
             >
               {process.map((elm, i) => (

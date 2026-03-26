@@ -16,7 +16,7 @@ export default function PageNotFoundPage() {
     <>
       <MetaComponent meta={metadata} />
       <Header1 /> <MobailHeader1 />
-      <main className="main">
+      <main id="main-content" className="main">
         <NotFound />
       </main>
       <Footer1 />
