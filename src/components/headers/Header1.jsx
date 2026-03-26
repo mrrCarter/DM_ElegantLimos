@@ -1,9 +1,11 @@
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 import { Link } from "react-router-dom";
 import Nav from "./components/Nav";
-
-const MOBILE_MENU_TOGGLE_EVENT = "premium-mobile-menu-toggle";
-const MOBILE_MENU_STATE_EVENT = "premium-mobile-menu-state";
+import {
+  getMobileMenuSnapshot,
+  subscribeToMobileMenu,
+  toggleMobileMenu,
+} from "@/lib/mobileMenuStore";
 
 const subscribeToScroll = (callback) => {
   if (typeof window === "undefined") {
@@ -25,31 +27,11 @@ export default function Header1() {
     getScrollSnapshot,
     () => false
   );
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return undefined;
-    }
-
-    const handleMenuState = (event) => {
-      setIsMobileMenuOpen(Boolean(event.detail?.open));
-    };
-
-    window.addEventListener(MOBILE_MENU_STATE_EVENT, handleMenuState);
-
-    return () => {
-      window.removeEventListener(MOBILE_MENU_STATE_EVENT, handleMenuState);
-    };
-  }, []);
-
-  const toggleMobileMenu = () => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    window.dispatchEvent(new CustomEvent(MOBILE_MENU_TOGGLE_EVENT));
-  };
+  const isMobileMenuOpen = useSyncExternalStore(
+    subscribeToMobileMenu,
+    getMobileMenuSnapshot,
+    () => false
+  );
 
   return (
     <header className={`header sticky-bar premium-header ${scrolled ? "stick" : ""}`}>

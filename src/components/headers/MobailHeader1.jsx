@@ -1,59 +1,29 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import { Link, useLocation } from "react-router-dom";
 import MobileNav from "./components/MobileNav";
-
-const MOBILE_MENU_TOGGLE_EVENT = "premium-mobile-menu-toggle";
-const MOBILE_MENU_STATE_EVENT = "premium-mobile-menu-state";
+import {
+  getMobileMenuSnapshot,
+  setMobileMenuOpen,
+  subscribeToMobileMenu,
+} from "@/lib/mobileMenuStore";
 
 export default function MobailHeader1() {
   const { pathname } = useLocation();
-  const [isOpen, setIsOpen] = useState(false);
+  const isOpen = useSyncExternalStore(
+    subscribeToMobileMenu,
+    getMobileMenuSnapshot,
+    () => false
+  );
   const panelRef = useRef(null);
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return undefined;
-    }
-
-    const handleToggle = () => {
-      setIsOpen((previousState) => !previousState);
-    };
-
-    window.addEventListener(MOBILE_MENU_TOGGLE_EVENT, handleToggle);
-
-    return () => {
-      window.removeEventListener(MOBILE_MENU_TOGGLE_EVENT, handleToggle);
-    };
-  }, []);
-
-  useEffect(() => {
-    setIsOpen(false);
+    setMobileMenuOpen(false);
   }, [pathname]);
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return undefined;
-    }
-
-    document.body.classList.toggle("mobile-menu-active", isOpen);
-    window.dispatchEvent(
-      new CustomEvent(MOBILE_MENU_STATE_EVENT, {
-        detail: { open: isOpen },
-      })
-    );
-
     if (isOpen) {
       panelRef.current?.focus();
     }
-
-    return () => {
-      document.body.classList.remove("mobile-menu-active");
-      window.dispatchEvent(
-        new CustomEvent(MOBILE_MENU_STATE_EVENT, {
-          detail: { open: false },
-        })
-      );
-    };
   }, [isOpen]);
 
   useEffect(() => {
@@ -63,7 +33,7 @@ export default function MobailHeader1() {
 
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
-        setIsOpen(false);
+        setMobileMenuOpen(false);
       }
     };
 
@@ -79,7 +49,7 @@ export default function MobailHeader1() {
         <button
           type="button"
           className="premium-mobile-overlay is-visible"
-          onClick={() => setIsOpen(false)}
+          onClick={() => setMobileMenuOpen(false)}
           aria-label="Close navigation menu"
         />
       )}
@@ -104,7 +74,7 @@ export default function MobailHeader1() {
                   <button
                     type="button"
                     className="premium-mobile-close"
-                    onClick={() => setIsOpen(false)}
+                    onClick={() => setMobileMenuOpen(false)}
                     aria-label="Close navigation menu"
                   >
                     Close
@@ -113,7 +83,7 @@ export default function MobailHeader1() {
 
                 <nav className="mt-15" aria-label="Mobile primary">
                   <ul className="mobile-menu font-heading premium-mobile-menu-list">
-                    <MobileNav onNavigate={() => setIsOpen(false)} />
+                    <MobileNav onNavigate={() => setMobileMenuOpen(false)} />
                   </ul>
                 </nav>
 
@@ -123,7 +93,11 @@ export default function MobailHeader1() {
                     with direct dispatch support.
                   </p>
                   <div className="premium-mobile-cta-actions">
-                    <Link className="btn btn-primary" to="/booking" onClick={() => setIsOpen(false)}>
+                    <Link
+                      className="btn btn-primary"
+                      to="/booking"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
                       Reserve Now
                     </Link>
                     <a className="premium-footer-link premium-footer-link--ghost" href="tel:+17817719069">

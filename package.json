@@ -14,8 +14,7 @@
     "preview": "vite preview",
     "start": "node stripe-server/server.mjs",
     "test": "vitest run",
-    "test:watch": "vitest",
-    "postinstall": "npm run build"
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@react-google-maps/api": "^2.20.3",

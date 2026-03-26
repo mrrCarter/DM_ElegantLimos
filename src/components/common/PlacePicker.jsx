@@ -52,6 +52,7 @@ export default function PlacePicker({
             const response = await axios.get(
               `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}`,
               {
+                signal: AbortSignal.timeout(GEOCODE_REQUEST_TIMEOUT_MS),
                 timeout: GEOCODE_REQUEST_TIMEOUT_MS,
               }
             );
