@@ -2,7 +2,7 @@ import { menuItems } from "@/data/menu";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 
-export default function MobileNav() {
+export default function MobileNav({ onNavigate }) {
   const { pathname } = useLocation();
 
   return (
@@ -17,6 +17,7 @@ export default function MobileNav() {
                 ? "active-link"
                 : ""
             }`}
+            onClick={onNavigate}
           >
             <span>{elm.title}</span>
           </Link>

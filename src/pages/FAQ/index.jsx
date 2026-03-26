@@ -15,7 +15,7 @@ export default function InvoicePage() {
       <MetaComponent meta={metadata} />
       <MobailHeader1 />
       <Header1 />
-      <main className="main">
+      <main id="main-content" className="main">
         <FAQ />
       </main>
       <Footer1 />

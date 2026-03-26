@@ -11,7 +11,7 @@ export default function InvoicePage() {
   return (
     <>
       <MetaComponent meta={metadata} />
-      <main className="main">
+      <main id="main-content" className="main">
         <Invoice />
       </main>
     </>

@@ -2,7 +2,14 @@
 
 import DatePicker, { DateObject } from "react-multi-date-picker";
 
-export default function DatePickerComponent({ value, onChange }) {
+export default function DatePickerComponent({
+  id,
+  name,
+  value,
+  onChange,
+  ariaLabel,
+  placeholder = "Select a date",
+}) {
   const handleDateChange = (newValue) => {
     if (newValue) {
       onChange(newValue.toDate());
@@ -13,10 +20,13 @@ export default function DatePickerComponent({ value, onChange }) {
 
   return (
     <DatePicker
+      id={id}
+      name={name ?? id}
+      aria-label={ariaLabel}
       format="MMMM DD YYYY"
       value={value ? new DateObject(value) : null}
       onChange={handleDateChange}
-      placeholder="Select a date"
+      placeholder={placeholder}
       style={{
         width: "100%",
         border: "none",

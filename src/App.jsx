@@ -41,6 +41,9 @@ function App() {
 
   return (
     <BookingProvider>
+      <a className="premium-skip-link" href="#main-content">
+        Skip to content
+      </a>
       <WhatsAppFloatingButton />
       <Routes>
         <Route path="/">

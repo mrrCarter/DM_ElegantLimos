@@ -6,7 +6,7 @@ import PlacePicker from "@/components/common/PlacePicker";
 import TimePickerComponent from "@/components/common/TimePicker";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BookingContext } from "@/components/booking/BookingContext";
 import { TRIP_TYPES } from "@/lib/booking";
 
@@ -76,10 +76,11 @@ export default function Hero() {
   // Validation states
   const [errors, setErrors] = useState({});
 
-  // Function to handle the Search button click
-  const handleSearchClick = () => {
+  const handleSearchSubmit = (event) => {
+    event.preventDefault();
+
     // Additional validation before navigation
-    let validationErrors = {};
+    const validationErrors = {};
 
     if (!date) validationErrors.date = "Please select a date.";
     if (!time) validationErrors.time = "Please select a time.";
@@ -112,11 +113,10 @@ export default function Hero() {
     }
   };
 
-  // Form validation - check if all required fields are filled
-  const isFormValid = date && time && fromAddress && toAddress;
+  const hasErrors = Object.keys(errors).length > 0;
 
   return (
-    <section className="section banner-home1 premium-hero">
+    <section className="section banner-home1 premium-hero" aria-labelledby="home-hero-title">
       <div className="box-swiper">
         <Swiper
           style={{ maxWidth: "100vw", overflow: "hidden" }}
@@ -125,37 +125,61 @@ export default function Hero() {
         >
           {banners.map((elm, i) => (
             <SwiperSlide key={i} className="swiper-slide">
-              <div
-                className="box-cover-image boxBgImage premium-hero-slide"
-                style={{
-                  backgroundImage: `url(${elm.url})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                  backgroundRepeat: "no-repeat",
-                  minHeight: "540px",
-                  width: "100%",
-                  maxWidth: "1920px",
-                  margin: "0 auto",
-                }}
-              >
-                <div className="premium-hero-overlay"></div>
-              </div>
-              <div className="box-banner-info premium-hero-copy">
-                <p className="premium-section-eyebrow wow fadeInUp">
-                  {elm.eyebrow}
-                </p>
-                <h1 className="premium-hero-title wow fadeInUp">{elm.title}</h1>
-                <p className="premium-hero-description wow fadeInUp">
-                  {elm.description}
-                </p>
-                <div className="premium-hero-badges wow fadeInUp">
-                  {elm.badges.map((badge) => (
-                    <span key={badge} className="premium-hero-badge">
-                      {badge}
-                    </span>
-                  ))}
-                </div>
-              </div>
+              {(() => {
+                const HeadingTag = i === 0 ? "h1" : "h2";
+
+                return (
+                  <>
+                    <div
+                      className="box-cover-image boxBgImage premium-hero-slide"
+                      style={{
+                        backgroundImage: `url(${elm.url})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        backgroundRepeat: "no-repeat",
+                        minHeight: "540px",
+                        width: "100%",
+                        maxWidth: "1920px",
+                        margin: "0 auto",
+                      }}
+                    >
+                      <div className="premium-hero-overlay"></div>
+                    </div>
+                    <div className="box-banner-info premium-hero-copy">
+                      <p className="premium-section-eyebrow wow fadeInUp">
+                        {elm.eyebrow}
+                      </p>
+                      <HeadingTag
+                        id={i === 0 ? "home-hero-title" : undefined}
+                        className="premium-hero-title wow fadeInUp"
+                      >
+                        {elm.title}
+                      </HeadingTag>
+                      <p className="premium-hero-description wow fadeInUp">
+                        {elm.description}
+                      </p>
+                      <div className="premium-hero-badges wow fadeInUp">
+                        {elm.badges.map((badge) => (
+                          <span key={badge} className="premium-hero-badge">
+                            {badge}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="premium-hero-actions wow fadeInUp">
+                        <Link className="btn btn-primary" to="/booking">
+                          Reserve a Ride
+                        </Link>
+                        <a
+                          className="premium-footer-link premium-footer-link--ghost"
+                          href="tel:+17817719069"
+                        >
+                          Call Dispatch
+                        </a>
+                      </div>
+                    </div>
+                  </>
+                );
+              })()}
             </SwiperSlide>
           ))}
 
@@ -166,7 +190,7 @@ export default function Hero() {
           </div>
         </Swiper>
       </div>
-      <div className="box-search-ride wow fadeInUp premium-search-card">
+      <form className="box-search-ride wow fadeInUp premium-search-card" onSubmit={handleSearchSubmit} noValidate>
         <div className="premium-search-intro">
           <p className="premium-section-eyebrow">Plan Your Ride</p>
           <h2>Get a polished quote before you ever step curbside.</h2>
@@ -174,15 +198,38 @@ export default function Hero() {
             Choose the route, lock the trip type, and move straight into vehicle
             selection with transparent pricing.
           </p>
+          <p className="premium-search-note">
+            Mobile-first improvement: the form now keeps labels, errors, and tap
+            targets intact at small widths instead of collapsing into a cramped
+            booking strip.
+          </p>
         </div>
+        {hasErrors && (
+          <div className="premium-form-alert" role="alert">
+            Review the highlighted fields before continuing to vehicle
+            selection.
+          </div>
+        )}
         <div className="search-item search-date">
           <div className="search-icon">
             <span className="item-icon icon-date"> </span>
           </div>
           <div className="search-inputs">
-            <label className="text-14 color-grey">Date</label>
-            <DatePickerComponent value={date} onChange={setDate} />
-            {errors.date && <span className="error-text">{errors.date}</span>}
+            <label className="text-14 color-grey" htmlFor="hero-trip-date">
+              Date
+            </label>
+            <DatePickerComponent
+              id="hero-trip-date"
+              name="trip-date"
+              value={date}
+              onChange={setDate}
+              ariaLabel="Trip date"
+            />
+            {errors.date && (
+              <span id="hero-trip-date-error" className="error-text" role="alert">
+                {errors.date}
+              </span>
+            )}
           </div>
         </div>
         <div className="search-item search-time">
@@ -190,9 +237,21 @@ export default function Hero() {
             <span className="item-icon icon-time"> </span>
           </div>
           <div className="search-inputs">
-            <label className="text-14 color-grey">Time</label>
-            <TimePickerComponent value={time} onChange={setTime} />
-            {errors.time && <span className="error-text">{errors.time}</span>}
+            <label className="text-14 color-grey" htmlFor="hero-trip-time">
+              Time
+            </label>
+            <TimePickerComponent
+              id="hero-trip-time"
+              name="trip-time"
+              value={time}
+              onChange={setTime}
+              ariaLabel="Trip time"
+            />
+            {errors.time && (
+              <span id="hero-trip-time-error" className="error-text" role="alert">
+                {errors.time}
+              </span>
+            )}
           </div>
         </div>
         <div className="search-item search-from">
@@ -200,10 +259,16 @@ export default function Hero() {
             <span className="item-icon icon-from"> </span>
           </div>
           <div className="search-inputs">
-            <label className="text-14 color-grey">From</label>
+            <label className="text-14 color-grey" htmlFor="hero-trip-from">
+              From
+            </label>
             <PlacePicker
+              id="hero-trip-from"
+              name="trip-from"
+              label="Pickup location"
               value={fromAddress}
               onChange={setFromAddress}
+              ariaDescribedBy={errors.fromAddress ? "hero-trip-from-error" : undefined}
               inputStyle={{
                 width: "100%",
                 padding: "10px",
@@ -212,7 +277,9 @@ export default function Hero() {
               }}
             />
             {errors.fromAddress && (
-              <span className="error-text">{errors.fromAddress}</span>
+              <span id="hero-trip-from-error" className="error-text" role="alert">
+                {errors.fromAddress}
+              </span>
             )}
           </div>
         </div>
@@ -221,10 +288,16 @@ export default function Hero() {
             <span className="item-icon icon-to"> </span>
           </div>
           <div className="search-inputs">
-            <label className="text-14 color-grey">To</label>
+            <label className="text-14 color-grey" htmlFor="hero-trip-to">
+              To
+            </label>
             <PlacePicker
+              id="hero-trip-to"
+              name="trip-to"
+              label="Drop-off location"
               value={toAddress}
               onChange={setToAddress}
+              ariaDescribedBy={errors.toAddress ? "hero-trip-to-error" : undefined}
               inputStyle={{
                 width: "100%",
                 padding: "10px",
@@ -233,14 +306,20 @@ export default function Hero() {
               }}
             />
             {errors.toAddress && (
-              <span className="error-text">{errors.toAddress}</span>
+              <span id="hero-trip-to-error" className="error-text" role="alert">
+                {errors.toAddress}
+              </span>
             )}
           </div>
         </div>
         <div className="search-item search-trip-type">
           <div className="search-inputs">
-            <label className="text-14 color-grey">Trip Type</label>
+            <label className="text-14 color-grey" htmlFor="hero-trip-type">
+              Trip Type
+            </label>
             <select
+              id="hero-trip-type"
+              name="trip-type"
               className="form-control"
               style={{
                 width: "100%",
@@ -259,20 +338,16 @@ export default function Hero() {
           </div>
         </div>
         <div className="search-item search-button">
-          <button
-            className="btn btn-search"
-            type="button"
-            onClick={handleSearchClick}
-            disabled={!isFormValid}
-          >
+          <button className="btn btn-search" type="submit">
             <img
               src="/assets/imgs/template/icons/search.svg"
-              alt="dmelegantlimos"
+              alt=""
+              aria-hidden="true"
             />
             Check Availability
           </button>
         </div>
-      </div>
+      </form>
       <div className="premium-hero-metrics">
         <div className="premium-metric-card">
           <span>Coverage</span>

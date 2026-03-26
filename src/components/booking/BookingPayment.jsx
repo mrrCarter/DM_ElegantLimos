@@ -15,6 +15,7 @@ import {
 
 const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
 const stripePromise = stripeKey ? loadStripe(stripeKey) : null;
+const PAYMENT_REQUEST_TIMEOUT_MS = 12000;
 
 function CheckoutForm({ onNext, onBack }) {
   const stripe = useStripe();
@@ -71,6 +72,7 @@ function CheckoutForm({ onNext, onBack }) {
 
     setLoading(true);
     setErrorMessage("");
+    let requestTimeoutId;
 
     try {
       const amount = Math.round(Number.parseFloat(bookingData.totalPrice) * 100);
@@ -78,6 +80,11 @@ function CheckoutForm({ onNext, onBack }) {
         typeof window !== "undefined" && window.crypto?.randomUUID
           ? window.crypto.randomUUID()
           : `booking-${Date.now()}`;
+      const controller = new AbortController();
+
+      requestTimeoutId = window.setTimeout(() => {
+        controller.abort();
+      }, PAYMENT_REQUEST_TIMEOUT_MS);
 
       const response = await fetch(`${apiBaseUrl}/api/payments/create-payment-intent`, {
         method: "POST",
@@ -85,6 +92,7 @@ function CheckoutForm({ onNext, onBack }) {
           "Content-Type": "application/json",
           "Idempotency-Key": idempotencyKey,
         },
+        signal: controller.signal,
         body: JSON.stringify({
           amount,
         }),
@@ -134,8 +142,15 @@ function CheckoutForm({ onNext, onBack }) {
       }
     } catch (error) {
       console.error("Payment processing error:", error);
-      setErrorMessage(error.message || "Payment failed. Please try again.");
+      if (error.name === "AbortError") {
+        setErrorMessage("Payment request timed out. Please try again.");
+      } else {
+        setErrorMessage(error.message || "Payment failed. Please try again.");
+      }
     } finally {
+      if (requestTimeoutId) {
+        window.clearTimeout(requestTimeoutId);
+      }
       setLoading(false);
     }
   };

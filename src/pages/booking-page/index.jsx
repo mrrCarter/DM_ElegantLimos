@@ -19,7 +19,9 @@ export default function BookingPageWrapper() {
       <MetaComponent meta={metadata} />
       <Header1 />
       <MobailHeader1 />
-      <BookingPage />
+      <main id="main-content" className="main">
+        <BookingPage />
+      </main>
       <Footer1 />
     </>
   );

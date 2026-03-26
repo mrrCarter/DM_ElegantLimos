@@ -1,39 +1,55 @@
 import { languages } from "@/data/languages";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function Language() {
   const [SelectedLanguage, setSelectedLanguage] = useState(languages[0].code);
   const [ddOpen, setDdOpen] = useState(false);
+  const triggerRef = useRef(null);
+  const menuRef = useRef(null);
+
   useEffect(() => {
-    const myDiv = document.getElementById("myDiv");
-    const myDiv2 = document.getElementById("myDiv2");
+    const handleDocumentClick = (event) => {
+      const target = event.target;
+      const clickedInsideTrigger = triggerRef.current?.contains(target);
+      const clickedInsideMenu = menuRef.current?.contains(target);
 
-    document.addEventListener("click", function (event) {
-      const isClickInside = myDiv.contains(event.target);
-      const isClickInside2 = myDiv2.contains(event.target);
-
-      if (!isClickInside && !isClickInside2) {
-        // The click was outside the myDiv, do something
+      if (!clickedInsideTrigger && !clickedInsideMenu) {
         setDdOpen(false);
       }
-    });
+    };
+
+    document.addEventListener("click", handleDocumentClick);
+    return () => {
+      document.removeEventListener("click", handleDocumentClick);
+    };
   }, []);
 
   return (
     <>
       <span
-        id="myDiv2"
+        ref={triggerRef}
         onClick={() => setDdOpen((pre) => !pre)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            setDdOpen((pre) => !pre);
+          }
+        }}
         className="text-14-medium icon-list icon-account"
+        role="button"
+        tabIndex={0}
+        aria-haspopup="listbox"
+        aria-expanded={ddOpen}
       >
         <span className="text-14-medium color-white arrow-down">
           {SelectedLanguage}
         </span>
       </span>
       <div
-        id="myDiv"
+        ref={menuRef}
         className={`dropdown-account ${ddOpen ? "dropdown-open" : ""} `}
+        role="listbox"
       >
         <ul>
           {languages.map((elm, i) => (
@@ -43,6 +59,8 @@ export default function Language() {
                 setSelectedLanguage(elm.code);
                 setDdOpen(false);
               }}
+              role="option"
+              aria-selected={SelectedLanguage === elm.code}
             >
               <a className="font-md" href="#">
                 <img src={elm.image} alt="luxride" />

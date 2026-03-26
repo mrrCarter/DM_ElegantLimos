@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 // import Countdown from "react-countdown";
 // const Completionist = () => <span>Comming Soon!</span>;
 
@@ -72,10 +74,7 @@ export default function ComingSoon() {
               </form>
             </div>
           </div> */}
-          <button
-            className="btn btn-primary w-100"
-            onClick={() => window.location.href = '/'}
-          >
+          <Link className="btn btn-primary w-100" to="/">
             Book a Ride
             <svg
               className="icon-16 ml-5"
@@ -92,7 +91,7 @@ export default function ComingSoon() {
                 d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"
               ></path>
             </svg>
-          </button>
+          </Link>
         </div>
       </div>
     </section>

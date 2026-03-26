@@ -5,6 +5,8 @@ import MobailHeader1 from "@/components/headers/MobailHeader1";
 import Features from "@/components/common/features/Features";
 import Hero from "@/components/homes/home-1/Hero";
 import Process from "@/components/common/process/Process";
+import BrandsMarquee from "@/components/homes/home-1/BrandsMarquee";
+import FrontpageShowcase from "@/components/homes/home-1/FrontpageShowcase";
 
 
 import MetaComponent from "@/components/common/MetaComponent";
@@ -19,8 +21,10 @@ export default function Home() {
     <>
       <MetaComponent meta={metadata} />
       <Header1 /> <MobailHeader1 />
-      <main className="main">
+      <main id="main-content" className="main">
         <Hero />
+        <BrandsMarquee />
+        <FrontpageShowcase />
         {/* <Feet /> */}
         <Process />
         <Features />

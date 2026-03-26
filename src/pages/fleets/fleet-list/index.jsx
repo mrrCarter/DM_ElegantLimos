@@ -17,7 +17,7 @@ export default function FleetListPage1() {
       <MetaComponent meta={metadata} />
       <Header1 /> <MobailHeader1 />
       <BreadCumb />
-      <main className="main">
+      <main id="main-content" className="main">
         <FeetList1 />
       </main>
       <Footer1 />

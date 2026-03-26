@@ -15,7 +15,7 @@ export default function RequestQuotePage() {
       <MetaComponent meta={metadata} />
       <Header1 />
       <MobailHeader1 />
-      <main className="main">
+      <main id="main-content" className="main">
         <RequestQuoteForm />
       </main>
       <Footer1 />
